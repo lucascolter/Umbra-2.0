@@ -157,6 +157,13 @@ tbody tr:hover td{background:var(--bg3)!important}
 #recon-tb td{padding:14px 14px}
 #recon-tb th{font-size:10.5px}
 #recon-tb .cel{padding:8px 10px}
+/* SOT — tighter Account column, wider dropdowns so Vendor / Media Buyer
+   stop truncating to "Ads…" or "—None…" at scale. */
+#sot-tb td:first-child{min-width:180px;max-width:220px}
+#sot-tb .aname{max-width:200px;font-size:13px}
+#sot-tb .aid{max-width:200px;font-size:10px}
+#sot-tb select.cel{min-width:140px}
+#sot-tb td{padding:13px 12px}
 
 /* ═══ LOG ═══════════════════════════════════════════════════════════════ */
 .log{background:var(--bg0);border:1px solid var(--b1);border-radius:9px;padding:14px;font-size:12px;font-family:monospace;max-height:260px;overflow-y:auto;line-height:1.7}
@@ -617,7 +624,6 @@ tr.filtered-out{display:none}
               <th>AdsPower Profile</th>
               <th>AdsPower Group</th>
               <th>Proxy</th>
-              <th>Pay day</th>
             </tr></thead>
             <tbody id="sot-tb"></tbody>
           </table>
@@ -3111,8 +3117,7 @@ function renderSOTView(){
       '<td><input class="cel mono" id="sot-pixel-'+a.id+'" placeholder="123456789012345" value="'+sanitize(m.pixel||'')+'" onchange="saveSotMeta(\''+ws.id+'\',\''+a.id+'\')" style="min-width:140px;font-size:12px"/></td>'+
       '<td><input class="cel" id="sot-profile-'+a.id+'" placeholder="A-PB-001" value="'+sanitize(m.dolphinProfile||'')+'" onchange="saveSotMeta(\''+ws.id+'\',\''+a.id+'\')" style="min-width:110px"/></td>'+
       '<td><input class="cel" id="sot-apgroup-'+a.id+'" placeholder="Group name" value="'+sanitize(m.adsPowerGroup||'')+'" onchange="saveSotMeta(\''+ws.id+'\',\''+a.id+'\')" style="min-width:130px"/></td>'+
-      '<td><input class="cel mono" id="sot-proxy-'+a.id+'" placeholder="ip:port" value="'+sanitize(m.proxy||'')+'" onchange="saveSotMeta(\''+ws.id+'\',\''+a.id+'\')" style="min-width:140px;font-size:12px"/></td>'+
-      '<td><input class="cel" type="number" min="1" max="31" id="sot-payday-'+a.id+'" placeholder="1-31" value="'+sanitize(m.paymentDay||'')+'" onchange="saveSotMeta(\''+ws.id+'\',\''+a.id+'\')" style="min-width:80px"'+(isCC?'':' disabled title="Set Billing to Credit card to enable"')+'/></td>';
+      '<td><input class="cel mono" id="sot-proxy-'+a.id+'" placeholder="ip:port" value="'+sanitize(m.proxy||'')+'" onchange="saveSotMeta(\''+ws.id+'\',\''+a.id+'\')" style="min-width:140px;font-size:12px"/></td>';
     tb.appendChild(tr);
   });
   applySotFilter();

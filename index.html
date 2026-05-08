@@ -3,347 +3,2536 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>UMBRA | Enterprise Command v5.0</title>
-
-<!-- Bibliotecas Externas -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono&display=swap">
-<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://graph.facebook.com https://api.telegram.org; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://graph.facebook.com https://api.telegram.org;">
+<meta http-equiv="X-Frame-Options" content="DENY">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="Referrer-Policy" content="no-referrer">
+<title>UMBRA Ops</title>
 <style>
-:root {
-  --bg-deep: #050608; --bg-card: #0e1016; --bg-input: #161922;
-  --gold: #d4a853; --gold-dim: rgba(212, 168, 83, 0.1);
-  --text-main: #f0f2f5; --text-muted: #8e95a3;
-  --border: rgba(255,255,255,0.05); --red: #ef4444; --green: #10b981;
+
+/* ═══ THEMES ═══════════════════════════════════════════════════════════ */
+[data-theme="dark"]{
+  --bg0:#080810;--bg1:#0E0E1C;--bg2:#141422;--bg3:#1C1C2C;--bg4:#242438;
+  --b1:#ffffff0C;--b2:#ffffff16;--b3:#ffffff22;
+  --t1:#F2F2FA;--t2:#9090B0;--t3:#50506A;--t4:#2C2C40;
+  --gold:#D4A853;--gold2:#E0BC70;--gd3:#D4A85318;--gd4:#D4A85338;--gd5:#D4A85358;
+  --green:#28C87A;--gn3:#28C87A18;--gn4:#28C87A35;
+  --red:#E84A48;--rd2:#220C0C;--rd3:#E84A4820;--rd4:#E84A4838;
+  --amber:#F09428;--am2:#221408;--am3:#F0942820;--am4:#F0942838;
+  --blue:#4EA8F0;--bl3:#4EA8F018;
+  --shadow:0 8px 40px #00000070;--shadow-sm:0 2px 12px #00000050;
+}
+[data-theme="light"]{
+  --bg0:#EEEEE8;--bg1:#FAFAF8;--bg2:#FFFFFF;--bg3:#F4F4F0;--bg4:#EAEAE6;
+  --b1:#00000009;--b2:#00000014;--b3:#00000020;
+  --t1:#18181E;--t2:#48485E;--t3:#90909A;--t4:#C8C8D4;
+  --gold:#8A6020;--gold2:#A07030;--gd3:#8A602016;--gd4:#8A602030;--gd5:#8A602050;
+  --green:#167A48;--gn3:#167A4818;--gn4:#167A4832;
+  --red:#C02828;--rd2:#FEF0F0;--rd3:#C0282818;--rd4:#C0282830;
+  --amber:#A85010;--am2:#FEF6F0;--am3:#A8501018;--am4:#A8501030;
+  --blue:#1860B8;--bl3:#1860B818;
+  --shadow:0 8px 40px #00000014;--shadow-sm:0 2px 12px #0000000C;
+}
+/* ═══ BASE ══════════════════════════════════════════════════════════════ */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+body{font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;background:var(--bg0);color:var(--t1);min-height:100vh;font-size:15px;transition:background .3s,color .3s}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--b3);border-radius:4px}
+
+/* ═══ LOGIN ═════════════════════════════════════════════════════════════ */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--bg0);position:relative;overflow:hidden}
+.login-wrap::before{content:'';position:absolute;width:600px;height:600px;background:radial-gradient(circle,var(--gd4) 0%,transparent 70%);top:-200px;left:50%;transform:translateX(-50%);pointer-events:none}
+.login-card{background:var(--bg2);border:1px solid var(--gd4);border-radius:16px;padding:44px;width:100%;max-width:380px;box-shadow:var(--shadow);position:relative;z-index:1}
+.login-logo{text-align:center;margin-bottom:36px}
+.login-logo-mark{font-size:32px;font-weight:800;letter-spacing:6px;color:var(--gold);display:block}
+.login-logo-sub{font-size:11px;color:var(--t2);letter-spacing:3px;margin-top:6px;text-transform:uppercase}
+.login-divider{width:40px;height:2px;background:var(--gd4);margin:16px auto 0;border-radius:2px}
+.flabel{display:block;font-size:11px;color:var(--t2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-weight:700}
+.finp{width:100%;background:var(--bg3);border:1px solid var(--b2);border-radius:8px;padding:12px 16px;color:var(--t1);font-size:14px;outline:none;transition:all .2s;margin-bottom:14px}
+.finp:focus{border-color:var(--gd5);background:var(--bg4);box-shadow:0 0 0 3px var(--gd3)}
+.pbtn{width:100%;background:var(--gold);color:#000;border:none;border-radius:8px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.5px}
+.pbtn:hover{background:var(--gold2);transform:translateY(-1px);box-shadow:0 4px 16px var(--gd4)}
+.pbtn:active{transform:none;box-shadow:none}
+.pbtn:disabled{background:var(--bg4);color:var(--t3);cursor:not-allowed;transform:none;box-shadow:none}
+.lerr{background:var(--rd2);border:1px solid var(--rd4);border-radius:7px;padding:10px 14px;font-size:12px;color:var(--red);margin-top:12px;display:none}
+.lhint{text-align:center;font-size:12px;color:var(--t2);margin-top:18px}
+
+/* ═══ TOPBAR ════════════════════════════════════════════════════════════ */
+.topbar{background:var(--bg1);border-bottom:1px solid var(--b1);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;backdrop-filter:blur(20px)}
+.tbrand{display:flex;align-items:center;gap:10px}
+.tbrand-name{font-size:15px;font-weight:800;letter-spacing:3px;color:var(--gold)}
+.tbadge-v{background:var(--gd3);border:1px solid var(--gd4);color:var(--gold);font-size:9px;padding:2px 8px;border-radius:20px;font-weight:700;letter-spacing:.5px}
+.tright{display:flex;align-items:center;gap:8px}
+.cpill{display:flex;align-items:center;gap:5px;background:var(--bg3);border:1px solid var(--b2);border-radius:20px;padding:5px 12px;font-size:11px;color:var(--t2)}
+.cdot{width:6px;height:6px;border-radius:50%;background:var(--t3);flex-shrink:0;transition:background .3s}
+.cdot.on{background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 var(--gn3)}50%{opacity:.8;box-shadow:0 0 0 4px transparent}}
+.ttoggle{display:flex;background:var(--bg3);border:1px solid var(--b2);border-radius:20px;padding:3px;gap:2px}
+.topt{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;color:var(--t3);transition:all .15s;border:none;background:transparent}
+.topt.on{background:var(--gd3);color:var(--gold);border:1px solid var(--gd4)}
+.theme-btn{background:var(--bg3);border:1px solid var(--b2);color:var(--t2);padding:6px 12px;border-radius:20px;font-size:11px;cursor:pointer;transition:all .15s;font-weight:500}
+.theme-btn:hover{border-color:var(--gd4);color:var(--gold)}
+.lout{background:transparent;border:1px solid var(--b2);color:var(--t3);padding:5px 12px;border-radius:20px;font-size:11px;cursor:pointer;transition:all .15s}
+.lout:hover{border-color:var(--rd4);color:var(--red)}
+
+/* ═══ TABS ══════════════════════════════════════════════════════════════ */
+.tabs{background:var(--bg1);border-bottom:1px solid var(--b1);padding:0 28px;display:flex;overflow-x:auto;gap:0}
+.tabs::-webkit-scrollbar{height:0}
+.tab{padding:15px 20px;font-size:14px;color:var(--t3);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;font-weight:500;user-select:none}
+.tab:hover{color:var(--t2)}
+.tab.on{color:var(--gold);border-bottom-color:var(--gold);font-weight:600}
+.tbg{font-size:10px;padding:2px 7px;border-radius:20px;margin-left:5px;background:var(--bg3);color:var(--t3);font-weight:600;transition:all .15s}
+.tab.on .tbg{background:var(--gd3);color:var(--gold)}
+.tbg.red{background:var(--rd2);color:var(--red)}
+
+/* ═══ MAIN ══════════════════════════════════════════════════════════════ */
+.main{padding:24px 32px;max-width:1480px;margin:0 auto}
+.pane{display:none}.pane.on{display:block}
+
+/* ═══ METRICS ═══════════════════════════════════════════════════════════ */
+.metrics{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-bottom:20px}
+@media(max-width:1200px){.metrics{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:1000px){.metrics{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:560px){.metrics{grid-template-columns:repeat(2,1fr)}}
+.met{background:var(--bg2);border:1px solid var(--b1);border-radius:10px;padding:18px 20px;transition:all .2s;cursor:default}
+.met:hover{border-color:var(--b2);transform:translateY(-1px);box-shadow:var(--shadow-sm)}
+.mlbl{font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;font-weight:700}
+.mval{font-size:24px;font-weight:700;color:var(--t2);font-variant-numeric:tabular-nums;line-height:1}
+.mval.ok{color:var(--green)}.mval.warn{color:var(--amber)}.mval.danger{color:var(--red)}.mval.gold{color:var(--gold)}
+.msub{font-size:11px;color:var(--t3);margin-top:5px}
+
+/* ═══ CARD ══════════════════════════════════════════════════════════════ */
+.card{background:var(--bg2);border:1px solid var(--b1);border-radius:12px;padding:22px 28px;margin-bottom:14px;transition:border .2s}
+.card:hover{border-color:var(--b2)}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.card-title{font-size:16px;font-weight:600;color:var(--t1)}
+.card-hint{font-size:13px;color:var(--t3);margin-bottom:16px;line-height:1.7}
+.brow{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+
+/* ═══ BUTTONS ═══════════════════════════════════════════════════════════ */
+.btn{background:var(--bg3);border:1px solid var(--b2);color:var(--t2);padding:8px 18px;border-radius:7px;font-size:13px;cursor:pointer;transition:all .15s;font-weight:500;white-space:nowrap}
+.btn:hover{border-color:var(--gd4);color:var(--gold)}
+.btn:disabled{color:var(--t3);cursor:not-allowed;border-color:var(--b1)}
+.btn.gold{background:var(--gd3);border-color:var(--gd4);color:var(--gold)}
+.btn.gold:hover{background:var(--gd4)}
+.btn.primary{background:var(--gold);color:#000;border-color:var(--gold);font-weight:700}
+.btn.primary:hover{background:var(--gold2)}
+
+/* ═══ TABLE ═════════════════════════════════════════════════════════════ */
+.tw{overflow-x:auto;border-radius:9px;border:1px solid var(--b1)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;padding:11px 16px;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid var(--b1);background:var(--bg3);white-space:nowrap}
+td{padding:13px 16px;border-bottom:1px solid var(--b1);color:var(--t2);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr.rdanger td{background:var(--rd2)}
+tr.rwarn td{background:var(--am2)}
+tr.rwatch td{background:var(--bl3)}
+tbody tr{transition:background .1s}
+tbody tr:hover td{background:var(--bg3)!important}
+
+/* ═══ PILLS ═════════════════════════════════════════════════════════════ */
+.pill{font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;white-space:nowrap;display:inline-block;letter-spacing:.3px}
+.p-ok{background:var(--gn3);color:var(--green);border:1px solid var(--gn4)}
+.p-warn{background:var(--am3);color:var(--amber);border:1px solid var(--am4)}
+.p-danger{background:var(--rd3);color:var(--red);border:1px solid var(--rd4)}
+.p-info{background:var(--bl3);color:var(--blue);border:1px solid #4A9EE830}
+.p-gray{background:var(--bg3);color:var(--t3);border:1px solid var(--b2)}
+.p-l1{background:#1A2A1018;color:#7EC85A;border:1px solid #7EC85A30}
+.p-l2{background:var(--gd3);color:var(--gold);border:1px solid var(--gd4)}
+.p-l3{background:var(--am3);color:var(--amber);border:1px solid var(--am4)}
+.p-l4{background:var(--rd3);color:var(--red);border:1px solid var(--rd4)}
+.p-l5{background:var(--rd2);color:#FF4444;border:1px solid #FF444440;animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* ═══ INPUTS ════════════════════════════════════════════════════════════ */
+.cel{background:var(--bg3);border:1px solid var(--b1);border-radius:6px;padding:8px 10px;color:var(--t1);font-size:14px;width:100%;outline:none;transition:all .15s}
+.cel:focus{border-color:var(--gd5);box-shadow:0 0 0 2px var(--gd3)}
+.cel-bal{width:115px;font-family:monospace;font-size:13px}
+
+/* ═══ NAMES ═════════════════════════════════════════════════════════════ */
+.aname{font-weight:600;color:var(--t1);font-size:14px}
+.aid{font-size:11px;color:var(--t3);font-family:monospace;margin-top:2px}
+
+/* ═══ LOG ═══════════════════════════════════════════════════════════════ */
+.log{background:var(--bg0);border:1px solid var(--b1);border-radius:9px;padding:14px;font-size:12px;font-family:monospace;max-height:260px;overflow-y:auto;line-height:1.7}
+.ll{padding:2px 0;border-bottom:1px solid var(--b1)}.ll:last-child{border-bottom:none}
+.lok{color:var(--green)}.lwarn{color:var(--amber)}.lerr{color:var(--red)}.linfo{color:var(--blue)}.lmuted{color:var(--t3)}
+
+/* ═══ HEALTH CARDS ══════════════════════════════════════════════════════ */
+.hgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.hcard{background:var(--bg2);border:1px solid var(--b1);border-radius:12px;padding:18px;transition:all .2s}
+.hcard:hover{transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+.hcard.hc-ok{border-color:var(--gn4)}
+.hcard.hc-warn{border-color:var(--am4)}
+.hcard.hc-danger{border-color:var(--rd4);background:var(--rd2)}
+.hc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+.hc-name{font-size:15px;font-weight:700;color:var(--t1);margin-bottom:2px}
+.hc-id{font-size:11px;color:var(--t3);font-family:monospace}
+.hc-rows{display:flex;flex-direction:column;gap:7px}
+.hc-row{display:flex;justify-content:space-between;align-items:center;font-size:13px}
+.hc-key{color:var(--t3)}.hc-val{color:var(--t2);font-family:monospace;font-weight:500}
+.abanner{margin-top:12px;padding:10px 12px;border-radius:7px;font-size:12px;font-weight:600;line-height:1.5}
+.ab-danger{background:var(--rd3);color:var(--red);border:1px solid var(--rd4)}
+.ab-warn{background:var(--am3);color:var(--amber);border:1px solid var(--am4)}
+
+/* ═══ WARMING ═══════════════════════════════════════════════════════════ */
+.wbar-w{background:var(--bg3);border-radius:20px;height:5px;width:64px;overflow:hidden;display:inline-block;vertical-align:middle}
+.wbar{height:100%;border-radius:20px;background:var(--gold);transition:width .5s}
+
+/* ═══ LAYER LEGEND ══════════════════════════════════════════════════════ */
+.layers{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:18px}
+@media(max-width:700px){.layers{grid-template-columns:repeat(2,1fr)}}
+.lcard{border-radius:8px;padding:11px 14px;transition:transform .2s;cursor:default}
+.lcard:hover{transform:translateY(-1px)}
+.lc1{background:#1A2A1012;border:1px solid #7EC85A22}
+.lc2{background:var(--gd3);border:1px solid var(--gd4)}
+.lc3{background:var(--am3);border:1px solid var(--am4)}
+.lc4{background:var(--rd3);border:1px solid var(--rd4)}
+.lc5{background:var(--rd2);border:1px solid #FF444430;animation:blink 2s infinite}
+.lc-t{font-weight:700;font-size:13px;margin-bottom:3px}
+.lc-s{font-size:11px;opacity:.7}
+
+/* ═══ REPORT ════════════════════════════════════════════════════════════ */
+.rbox{background:var(--bg0);border:1px solid var(--b1);border-radius:9px;padding:20px;font-size:13px;font-family:monospace;line-height:2;color:var(--t2);white-space:pre-wrap;max-height:420px;overflow-y:auto}
+
+/* ═══ SETUP ════════════════════════════════════════════════════════════ */
+.setup-wrap{min-height:calc(100vh - 112px);display:flex;align-items:center;justify-content:center;padding:40px 20px}
+.setup-card{background:var(--bg2);border:1px solid var(--gd4);border-radius:16px;padding:36px;width:100%;max-width:440px;box-shadow:var(--shadow)}
+.setup-card h2{color:var(--gold);font-size:18px;font-weight:700;margin-bottom:8px}
+.setup-card p{color:var(--t3);font-size:13px;line-height:1.7;margin-bottom:24px}
+.errbox{background:var(--rd2);border:1px solid var(--rd4);border-radius:7px;padding:11px 14px;font-size:12px;color:var(--red);margin-top:12px;display:none}
+
+/* ═══ LAYOUT ════════════════════════════════════════════════════════════ */
+.two-col{display:grid;grid-template-columns:1.3fr 1fr;gap:14px}
+@media(max-width:800px){.two-col{grid-template-columns:1fr}}
+.mono{font-family:monospace}
+.c-ok{color:var(--green)}.c-danger{color:var(--red)}.c-warn{color:var(--amber)}.c-muted{color:var(--t3)}.c-gold{color:var(--gold)}
+
+/* ═══ MODAL ════════════════════════════════════════════════════════════ */
+.modal-bg{display:none;position:fixed;inset:0;background:#00000088;z-index:200;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px)}
+.modal-bg.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--b2);border-radius:14px;padding:28px;width:100%;max-width:420px;box-shadow:var(--shadow)}
+.modal h3{color:var(--gold);font-size:15px;font-weight:700;margin-bottom:18px}
+.mfield{margin-bottom:12px}
+
+/* ═══ LOADER ════════════════════════════════════════════════════════════ */
+.loader{display:inline-block;width:13px;height:13px;border:2px solid var(--b2);border-top-color:var(--gold);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty-s{text-align:center;padding:48px;color:var(--t3);font-size:13px}
+
+/* ═══ RESPONSIVE ════════════════════════════════════════════════════════ */
+@media(max-width:600px){
+  .topbar{padding:0 16px;height:52px}
+  .tabs{padding:0 16px}
+  .main{padding:16px}
+  .tbrand-name{font-size:13px}
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
-body { font-family: 'Inter', sans-serif; background: var(--bg-deep); color: var(--text-main); line-height: 1.5; overflow-x: hidden; }
+/* ═══ WORKSPACE ═══════════════════════════════════════════════════════════ */
+.ws-selector{display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--b2);border-radius:20px;padding:4px 8px 4px 12px}
+.ws-label{font-size:11px;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-right:2px}
+.ws-select{background:transparent;border:none;color:var(--t1);font-size:12px;font-weight:600;outline:none;cursor:pointer;max-width:160px}
+.ws-select option{background:var(--bg2);color:var(--t1)}
+.ws-add{background:var(--gd3);border:1px solid var(--gd4);color:var(--gold);padding:4px 10px;border-radius:20px;font-size:11px;cursor:pointer;font-weight:700;transition:all .15s}
+.ws-add:hover{background:var(--gd4)}
+.ws-badge{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;font-size:10px;font-weight:700;margin-left:4px}
+.ws-badge.ok{background:var(--gn3);color:var(--green)}
+.ws-badge.err{background:var(--rd3);color:var(--red);animation:blink 1s infinite}
 
-/* ═══ LOGIN ═══ */
-#login-screen { height: 100vh; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #161922 0%, #050608 100%); }
-.login-card { background: var(--bg-card); padding: 50px; border-radius: 30px; width: 400px; text-align: center; border: 1px solid var(--border); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+/* ═══ BANNER ═══════════════════════════════════════════════════════════════ */
+.banner-overlay{display:none;position:fixed;inset:0;background:#00000055;z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.banner-overlay.show{display:flex}
+.banner-box{background:var(--bg2);border:1px solid var(--b2);border-radius:14px;padding:28px 36px;text-align:center;box-shadow:var(--shadow);max-width:400px;width:90%}
+.banner-icon{font-size:32px;margin-bottom:12px}
+.banner-title{font-size:16px;font-weight:700;color:var(--t1);margin-bottom:8px}
+.banner-msg{font-size:13px;color:var(--t2);margin-bottom:20px;line-height:1.6}
+.banner-ok{background:var(--gold);color:#000;border:none;border-radius:8px;padding:10px 28px;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s}
+.banner-ok:hover{background:var(--gold2)}
+.banner-box.critical{border-color:var(--rd4)}
+.banner-box.critical .banner-ok{background:var(--red);color:#fff}
+.banner-box.info{border-color:var(--gd4)}
 
-/* ═══ UI COMPONENTS ═══ */
-.topbar { background: rgba(14, 16, 22, 0.95); backdrop-filter: blur(20px); height: 75px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
-.t-brand { font-weight: 900; font-size: 24px; letter-spacing: 5px; color: var(--gold); }
+/* ═══ WORKSPACE TABLE TAG ══════════════════════════════════════════════════ */
+.ws-tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap;display:inline-block;letter-spacing:.3px}
+.ws-row-divider td{background:var(--bg3)!important;padding:4px 14px;font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid var(--b2)!important}
 
-/* ═══ ANALYTICS GRID ═══ */
-.analytics-grid { display: grid; grid-template-columns: 1.2fr 2.5fr 1fr; gap: 20px; padding: 25px 40px; }
-.chart-card { background: var(--bg-card); border-radius: 24px; padding: 25px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-.chart-label { font-size: 11px; text-transform: uppercase; font-weight: 800; color: var(--text-muted); margin-bottom: 15px; letter-spacing: 1.5px; }
+/* ═══ RATE LIMIT ═══════════════════════════════════════════════════════════ */
+.rl-bar{background:var(--bg3);border:1px solid var(--b1);border-radius:20px;height:4px;width:80px;overflow:hidden;display:inline-block;vertical-align:middle;margin-left:6px}
+.rl-fill{height:100%;border-radius:20px;background:var(--green);transition:width .5s,background .5s}
 
-/* ═══ TABS ═══ */
-.tabs { display: flex; margin: 0 40px; gap: 10px; border-bottom: 1px solid var(--border); }
-.tab { padding: 18px 25px; font-weight: 700; color: var(--text-muted); cursor: pointer; transition: 0.2s; border-bottom: 3px solid transparent; }
-.tab.on { color: var(--gold); border-bottom-color: var(--gold); background: var(--gold-dim); }
+/* ═══ WORKSPACE SETUP ══════════════════════════════════════════════════════ */
+.ws-setup-card{background:var(--bg2);border:1px solid var(--gd4);border-radius:16px;padding:36px;width:100%;max-width:480px;box-shadow:var(--shadow)}
+.ws-setup-card h2{color:var(--gold);font-size:18px;font-weight:700;margin-bottom:6px}
+.ws-setup-card p{color:var(--t3);font-size:13px;line-height:1.7;margin-bottom:22px}
+.ws-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;max-height:200px;overflow-y:auto}
+.ws-item{display:flex;align-items:center;justify-content:space-between;background:var(--bg3);border:1px solid var(--b2);border-radius:8px;padding:10px 14px}
+.ws-item-name{font-size:13px;font-weight:600;color:var(--t1)}
+.ws-item-sub{font-size:11px;color:var(--t3);margin-top:2px}
+.ws-item-status{display:flex;align-items:center;gap:8px}
+.ws-item-del{background:transparent;border:none;color:var(--t3);cursor:pointer;font-size:14px;transition:color .15s}
+.ws-item-del:hover{color:var(--red)}
 
-/* ═══ CONTENT AREA ═══ */
-.content-area { padding: 30px 40px; }
-.pane { display: none; }
-.pane.on { display: block; animation: fadeIn 0.4s ease; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* ═══ TABLE ═══ */
-.card-main { background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
-table { width: 100%; border-collapse: collapse; }
-th { text-align: left; padding: 18px; background: rgba(0,0,0,0.2); color: var(--text-muted); font-size: 10px; text-transform: uppercase; font-weight: 800; }
-td { padding: 16px 18px; border-bottom: 1px solid var(--border); font-size: 14px; vertical-align: middle; }
+/* ═══ PDF EXPORT ══════════════════════════════════════════════════════════ */
+.btn.pdf{background:var(--rd3);border-color:var(--rd4);color:var(--red)}
+.btn.pdf:hover{background:var(--rd4)}
+@media print{
+  .topbar,.tabs,.layers,.card-hdr button,.btn,.lout,.ws-selector,.ws-add,
+  .banner-overlay,.modal-bg{display:none!important}
+  .pane{display:block!important}
+  body{background:#fff!important;color:#000!important}
+  .rbox{border:1px solid #ccc!important;background:#f9f9f9!important;color:#000!important;max-height:none!important}
+}
 
-.cel { background: var(--bg-input); border: 1px solid var(--border); color: #fff; padding: 8px 12px; border-radius: 8px; width: 100%; outline: none; font-weight: 600; font-size: 13px; }
-.cel:focus { border-color: var(--gold); }
 
-/* ═══ HEALTH ═══ */
-.h-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
-.h-card { background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border); padding: 25px; border-left: 6px solid var(--green); transition: 0.3s; }
-.h-card.disabled { border-left-color: var(--red); background: rgba(239,68,68,0.03); }
+/* ═══ FILTER BAR ══════════════════════════════════════════════════════════ */
+.filter-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px;padding:12px 16px;background:var(--bg3);border:1px solid var(--b1);border-radius:10px}
+.filter-bar input,.filter-bar select{background:var(--bg2);border:1px solid var(--b2);border-radius:6px;padding:6px 12px;color:var(--t1);font-size:13px;outline:none;transition:all .15s}
+.filter-bar input{flex:1;min-width:140px}
+.filter-bar input:focus,.filter-bar select:focus{border-color:var(--gd5);box-shadow:0 0 0 2px var(--gd3)}
+.filter-bar select{cursor:pointer}
+.filter-count{font-size:12px;color:var(--t3);margin-left:auto;white-space:nowrap}
+.filter-clear{background:transparent;border:1px solid var(--b2);color:var(--t3);padding:5px 10px;border-radius:6px;font-size:12px;cursor:pointer;transition:all .15s}
+.filter-clear:hover{border-color:var(--rd4);color:var(--red)}
+tr.filtered-out{display:none}
 
-/* ═══ UTILS ═══ */
-.btn { padding: 12px 24px; border-radius: 12px; font-weight: 800; cursor: pointer; border: none; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; font-size: 12px; }
-.btn-gold { background: var(--gold); color: #000; }
-.btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(212, 168, 83, 0.3); }
 
-.pill { padding: 5px 12px; border-radius: 8px; font-size: 10px; font-weight: 900; background: var(--gold-dim); color: var(--gold); }
-.p-l5 { background: var(--red); color: #fff; animation: pulse 1s infinite; }
-@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+/* ═══ ASSETS PANE ═════════════════════════════════════════════════════════ */
+.assets-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:8px}
+@media(max-width:900px){.assets-grid{grid-template-columns:1fr}}
+.asset-col{background:var(--bg3);border:1px solid var(--b1);border-radius:10px;padding:18px}
+.asset-col-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.asset-col-hdr h4{font-size:13px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:0}
+.asset-count{background:var(--gd3);color:var(--gold);border:1px solid var(--gd4);font-size:11px;font-weight:700;padding:2px 10px;border-radius:20px}
+.asset-add{display:flex;gap:6px;margin-bottom:14px}
+.asset-add input{flex:1;background:var(--bg2);border:1px solid var(--b2);border-radius:6px;padding:8px 12px;color:var(--t1);font-size:13px;outline:none;transition:all .15s}
+.asset-add input:focus{border-color:var(--gd5);box-shadow:0 0 0 2px var(--gd3)}
+.asset-list{display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto}
+.asset-item{display:flex;align-items:center;justify-content:space-between;background:var(--bg2);border:1px solid var(--b1);border-radius:6px;padding:8px 12px;font-size:13px;color:var(--t1);transition:all .15s}
+.asset-item:hover{border-color:var(--b2);background:var(--bg4)}
+.asset-item-name{font-weight:500}
+.asset-item-del{background:transparent;border:none;color:var(--t3);cursor:pointer;font-size:14px;padding:0 4px;transition:color .15s}
+.asset-item-del:hover{color:var(--red)}
+.asset-empty{text-align:center;padding:24px 12px;color:var(--t3);font-size:12px}
 
-.ws-tag { font-size: 9px; font-weight: 900; padding: 3px 8px; border-radius: 6px; text-transform: uppercase; background: var(--gold-dim); color: var(--gold); margin-bottom: 5px; display: inline-block; }
-.b-box { background: #0c0d12; border-radius: 24px; padding: 40px; border: 1px solid var(--border); line-height: 1.8; font-family: monospace; font-size: 15px; white-space: pre-wrap; }
+/* ═══ WORKSPACES PANE ════════════════════════════════════════════════════ */
+.ws-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.ws-card{background:var(--bg3);border:1px solid var(--b1);border-radius:12px;padding:18px;transition:all .2s}
+.ws-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+.ws-card.ws-error{border-color:var(--rd4);background:var(--rd2)}
+.ws-card.ws-connected{border-left:3px solid var(--green)}
+.ws-card-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+.ws-card-name{font-size:15px;font-weight:700;color:var(--t1);margin-bottom:3px}
+.ws-card-stats{font-size:11px;color:var(--t3)}
+.ws-card-actions{display:flex;gap:6px;flex-wrap:wrap}
+.ws-card-actions .btn{padding:5px 10px;font-size:11px}
+.ws-card-color-bar{height:3px;border-radius:2px;margin-bottom:14px}
 
-#sync-progress { width: 100%; height: 4px; background: var(--bg-input); position: fixed; top: 75px; left: 0; z-index: 2000; display: none; }
-#sync-bar { width: 0%; height: 100%; background: var(--gold); box-shadow: 0 0 15px var(--gold); transition: width 0.4s; }
+/* ═══ BAN TRACKER ═════════════════════════════════════════════════════════ */
+.bans-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:900px){.bans-stats{grid-template-columns:repeat(2,1fr)}}
+.bans-breakdown{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:900px){.bans-breakdown{grid-template-columns:1fr}}
+.bans-block{background:var(--bg3);border:1px solid var(--b1);border-radius:10px;padding:14px}
+.bans-block h5{font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;font-weight:700}
+.bans-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:4px 0;border-bottom:1px dashed var(--b1)}
+.bans-row:last-child{border-bottom:none}
+.bans-row span:first-child{color:var(--t2)}
+.bans-row span:last-child{color:var(--t1);font-family:monospace;font-weight:700}
+.bans-tl{background:var(--bg3);border:1px solid var(--b1);border-radius:10px;padding:14px;margin-bottom:14px}
+.bans-tl h5{font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;font-weight:700}
+.bans-tl-bars{display:flex;align-items:flex-end;gap:2px;height:60px;border-bottom:1px solid var(--b2);padding-bottom:2px}
+.bans-tl-bar{flex:1;background:var(--gd3);border:1px solid var(--gd4);border-radius:2px 2px 0 0;min-height:2px;position:relative;transition:background .15s}
+.bans-tl-bar:hover{background:var(--gd5)}
+.bans-tl-bar.b-empty{background:var(--bg2);border-color:var(--b1)}
+.bans-tl-bar.b-hi{background:var(--rd3);border-color:var(--rd4)}
+.bans-tl-bar.b-md{background:var(--am3);border-color:var(--am4)}
+.bans-tl-labels{display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:var(--t3)}
 
-.modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); backdrop-filter: blur(10px); z-index:5000; align-items:center; justify-content:center; }
-.modal { background: var(--bg-card); padding: 40px; border-radius: 30px; width: 450px; border: 1px solid var(--gold-dim); }
+/* ═══ VENDOR SCORECARD ════════════════════════════════════════════════════ */
+.vs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:8px}
+.vs-card{background:var(--bg3);border:1px solid var(--b1);border-radius:12px;padding:18px;transition:all .2s}
+.vs-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+.vs-card-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:8px}
+.vs-card-name{font-size:15px;font-weight:700;color:var(--t1)}
+.vs-rating{font-size:13px;font-weight:700;letter-spacing:1px;font-family:monospace;white-space:nowrap}
+.vs-rating-5,.vs-rating-4{color:var(--green)}
+.vs-rating-3{color:var(--gold)}
+.vs-rating-2{color:var(--amber)}
+.vs-rating-1{color:var(--red)}
+.vs-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.vs-stat{background:var(--bg2);border:1px solid var(--b1);border-radius:8px;padding:8px 10px}
+.vs-stat-lbl{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;font-weight:700}
+.vs-stat-val{font-size:14px;color:var(--t1);font-weight:700;font-family:monospace}
+.vs-stat-val.danger{color:var(--red)}.vs-stat-val.ok{color:var(--green)}.vs-stat-val.warn{color:var(--amber)}
+.vs-fields{display:flex;flex-direction:column;gap:8px}
+.vs-field-row{display:flex;align-items:center;gap:8px;font-size:12px}
+.vs-field-row label{color:var(--t3);min-width:90px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;font-weight:700}
+.vs-field-row select,.vs-field-row input,.vs-field-row textarea{background:var(--bg2);border:1px solid var(--b2);border-radius:6px;padding:6px 8px;color:var(--t1);font-size:12px;flex:1;outline:none;font-family:inherit;resize:vertical;min-width:0}
+.vs-field-row select:focus,.vs-field-row input:focus,.vs-field-row textarea:focus{border-color:var(--gd5);box-shadow:0 0 0 2px var(--gd3)}
+
 </style>
 </head>
 <body>
 
 <!-- LOGIN -->
-<div id="login-screen">
-    <div class="login-card">
-        <h1 class="t-brand" style="font-size: 40px; margin-bottom: 10px;">UMBRA</h1>
-        <p style="color:var(--text-muted); font-weight:700; margin-bottom:30px; letter-spacing: 2px;">ENTERPRISE ACCESS v5.0</p>
-        <input type="password" id="pw-inp" class="cel" placeholder="SECURITY KEY" style="text-align: center; font-size: 18px; padding: 15px;">
-        <button class="btn btn-gold" style="width: 100%; margin-top: 20px;" onclick="doLogin()">AUTHENTICATE SYSTEM</button>
-        <div id="login-err" style="color:var(--red); margin-top:15px; font-weight:800; display:none;">ACCESS DENIED</div>
+<div class="login-wrap" id="login-screen">
+  <div style="position:absolute;top:20px;right:20px;display:flex;gap:8px">
+    <button class="theme-btn" id="login-theme-btn" onclick="toggleTheme()">☀️ Light</button>
+  </div>
+  <div class="login-card">
+    <div class="login-logo">
+      <span class="login-logo-mark">UMBRA</span>
+      <span class="login-logo-sub">Ops Dashboard</span>
+      <div class="login-divider"></div>
     </div>
+    <div class="mfield">
+      <span class="flabel">Password</span>
+      <input type="password" class="finp" id="pw-inp" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+    <button class="pbtn" id="login-btn" onclick="doLogin()">Access dashboard</button>
+    <div class="lerr" id="login-err"></div>
+    <div class="lhint" id="login-hint">First time? Set a password.</div>
+  </div>
 </div>
 
-<!-- APP UI -->
-<div id="app-ui" style="display:none">
-    <div id="sync-progress"><div id="sync-bar"></div></div>
-    
-    <header class="topbar">
-        <div class="t-brand">UMBRA <span style="font-size:10px; background:var(--gold); color:#000; padding:2px 6px; border-radius:4px; vertical-align:middle;">v5.0</span></div>
-        <div style="display:flex; gap:15px; align-items:center;">
-            <select id="ws-select" class="cel" style="width:200px;" onchange="switchWs(this.value)"></select>
-            <button class="btn btn-gold" onclick="openModal()">+ Add Node</button>
-            <button class="btn" style="background:#ef444420; color:#ef4444;" onclick="doLogout()">Logout</button>
-        </div>
-    </header>
+<!-- APP -->
+<div id="app" style="display:none">
+  <div class="topbar">
+    <div class="tbrand">
+      <span class="tbrand-name">UMBRA</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex:1;justify-content:center">
+      <div class="ws-selector">
+        <span class="ws-label">Workspace</span>
+        <select class="ws-select" id="ws-select" onchange="switchWorkspace(this.value)"></select>
+      </div>
+      <button class="ws-add" onclick="openAddWs()">+ Add workspace</button>
+    </div>
+    <div class="tright">
+      <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">☀️ Light</button>
+      <div class="cpill">
+        <div class="cdot" id="conn-dot"></div>
+        <span id="conn-label">Not connected</span>
+      </div>
+      <button class="lout" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
 
-    <section class="analytics-grid">
-        <div class="chart-card">
-            <div class="chart-label">Liquidity Share (Vendor)</div>
-            <div id="vendor-chart"></div>
-        </div>
-        <div class="chart-card">
-            <div class="chart-label">Global Spending Velocity</div>
-            <div id="spend-chart"></div>
-        </div>
-        <div style="display:flex; flex-direction:column; gap:20px;">
-            <div class="chart-card" style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-                <div class="chart-label">Total Balance</div>
-                <div id="m-bal" style="font-size:36px; font-weight:800; color:var(--gold);">$0</div>
-            </div>
-            <div class="chart-card" style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-                <div class="chart-label">Next Sync</div>
-                <div id="m-cd" style="font-size:24px; font-weight:800; color:var(--text-muted);">08:00</div>
-            </div>
-        </div>
-    </section>
+  <div class="tabs" id="tabs" style="display:none">
+    <div class="tab on" onclick="switchTab('recon')"><span id="tab-recon">Reconciliation</span> <span class="tbg" id="tb-recon">—</span></div>
+    <div class="tab" onclick="switchTab('health')"><span id="tab-health">Account health</span> <span class="tbg" id="tb-health">—</span></div>
+    <div class="tab" onclick="switchTab('warming')"><span id="tab-warming">Warming</span> <span class="tbg" id="tb-warm">0</span></div>
+    <div class="tab" onclick="switchTab('bans')"><span id="tab-bans">Ban Tracker</span> <span class="tbg" id="tb-bans">0</span></div>
+    <div class="tab" onclick="switchTab('assets')"><span id="tab-assets">Assets</span></div>
+    <div class="tab" onclick="switchTab('workspaces')"><span id="tab-workspaces">Workspaces</span> <span class="tbg" id="tb-ws">0</span></div>
+    <div class="tab" onclick="switchTab('settings')"><span id="tab-settings">Settings</span></div>
+    <div class="tab" onclick="switchTab('report')"><span id="tab-report">Report</span></div>
+    <div class="tab" onclick="switchTab('log')"><span id="tab-log">Log</span> <span class="tbg" id="tb-log">0</span></div>
+  </div>
 
-    <nav class="tabs">
-        <div class="tab on" onclick="switchTab('recon', this)">Reconciliation</div>
-        <div class="tab" onclick="switchTab('health', this)">Account Health</div>
-        <div class="tab" onclick="switchTab('briefing', this)">Strategic Briefing</div>
-        <div class="tab" onclick="switchTab('infra', this)">Infrastructure</div>
-    </nav>
+  <div class="main">
 
-    <main class="content-area">
-        <div id="pane-recon" class="pane on">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h2 style="font-size:24px; font-weight:800;">Real-time Asset Reconciliation</h2>
-                <button class="btn btn-gold" onclick="runSync()">RUN GLOBAL SYNC</button>
-            </div>
-            <div class="card-main">
-                <table>
-                    <thead>
-                        <tr><th>Identity</th><th>Vendor</th><th>Buyer</th><th>Vertical</th><th>Balance</th><th>Spend</th><th>Remaining</th><th>Alert</th></tr>
-                    </thead>
-                    <tbody id="recon-tb"></tbody>
-                </table>
-            </div>
+    <!-- RECON -->
+    <div id="pane-recon" class="pane on">
+      <div class="metrics">
+        <div class="met"><div class="mlbl">Vendor balances</div><div class="mval gold" id="m-bal">—</div></div>
+        <div class="met"><div class="mlbl">Meta spend today</div><div class="mval" id="m-spend">—</div></div>
+        <div class="met"><div class="mlbl">Avg runway</div><div class="mval" id="m-runway">—</div></div>
+        <div class="met"><div class="mlbl">Active flags</div><div class="mval" id="m-flags">—</div></div>
+        <div class="met"><div class="mlbl">Active accounts</div><div class="mval ok" id="m-active">—</div></div>
+        <div class="met"><div class="mlbl">At DSL cap</div><div class="mval" id="m-dsl-cap">—</div></div>
+        <div class="met"><div class="mlbl">Next check</div><div class="mval gold" id="m-cd" style="font-size:18px">—</div></div>
+      </div>
+      <div class="layers">
+        <div class="lcard lc1"><div class="lc-t" style="color:#7EC85A">L1 — 20%</div><div class="lc-s" style="color:#7EC85A">Attention</div></div>
+        <div class="lcard lc2"><div class="lc-t" style="color:var(--gold)">L2 — 10%</div><div class="lc-s" style="color:var(--gold)">Alert</div></div>
+        <div class="lcard lc3"><div class="lc-t" style="color:var(--amber)">L3 — 5%</div><div class="lc-s" style="color:var(--amber)">Critical</div></div>
+        <div class="lcard lc4"><div class="lc-t" style="color:var(--red)">L4 — Zero</div><div class="lc-s" style="color:var(--red)">Paused</div></div>
+        <div class="lcard lc5"><div class="lc-t" style="color:#FF4444">L5 — Negative</div><div class="lc-s" style="color:#FF4444">Emergency</div></div>
+      </div>
+      <div class="card">
+        <div class="card-hdr">
+          <div class="card-title">Live reconciliation</div>
+          <div class="brow">
+            <span style="font-size:11px;color:var(--t3)" id="last-lbl">Not checked yet</span>
+            <button class="btn" id="check-btn" onclick="runCheck()">Run check now</button>
+            <button class="btn gold" onclick="switchTab('report')">Daily report</button>
+          </div>
         </div>
-
-        <div id="pane-health" class="pane"><div id="h-grid" class="h-grid"></div></div>
-
-        <div id="pane-briefing" class="pane">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h2 style="font-size:24px;">Strategic Briefing</h2>
-                <button class="btn btn-gold" onclick="copyBriefing()">Copy Report</button>
-            </div>
-            <div id="b-box" class="b-box">Initiate sync for analysis...</div>
+        <p class="card-hint">Enter vendor balance, vendor, buyer, BM and vertical per account. Spend is pulled from Meta API automatically. Alerts fire on every new flag.</p>
+        <div class="filter-bar" id="recon-filter-bar">
+          <input type="text" id="filter-search" placeholder="🔍  Search account, vendor, buyer..." oninput="applyFilters()"/>
+          <select id="filter-workspace" onchange="applyFilters()">
+            <option value="">All workspaces</option>
+          </select>
+          <select id="filter-vertical" onchange="applyFilters()">
+            <option value="">All verticals</option>
+          </select>
+          <select id="filter-buyer" onchange="applyFilters()">
+            <option value="">All buyers</option>
+          </select>
+          <select id="filter-layer" onchange="applyFilters()">
+            <option value="">All alerts</option>
+            <option value="0">No alert</option>
+            <option value="1">L1 — 20%</option>
+            <option value="2">L2 — 10%</option>
+            <option value="3">L3 — 5%</option>
+            <option value="4">L4 — Zero</option>
+            <option value="5">L5 — Emergency</option>
+          </select>
+          <span class="filter-count" id="filter-count"></span>
+          <button class="filter-clear" onclick="clearFilters()">Clear</button>
         </div>
-
-        <div id="pane-infra" class="pane">
-            <h2 style="margin-bottom:20px;">Infrastructure Node Management</h2>
-            <div class="card-main">
-                <table>
-                    <thead><tr><th>Workspace</th><th>API Access Token</th><th>Actions</th></tr></thead>
-                    <tbody id="ws-list-tb"></tbody>
-                </table>
-            </div>
+        <div class="tw">
+          <table>
+            <thead><tr><th>Account</th><th>Vendor</th><th>Buyer</th><th>BM</th><th>Vertical</th><th>Profile</th><th>Proxy</th><th>DSL ($)</th><th>Balance ($)</th><th>Spend today ($)</th><th>DSL usage</th><th>Remaining ($)</th><th>Runway</th><th>Alert</th></tr></thead>
+            <tbody id="recon-tb"></tbody>
+          </table>
         </div>
-    </main>
+      </div>
+    </div>
+
+    <!-- HEALTH -->
+    <div id="pane-health" class="pane">
+      <div class="card-hdr" style="margin-bottom:14px">
+        <div style="font-size:15px;font-weight:700;color:var(--t1)">Account health</div>
+        <button class="btn gold" id="health-btn" onclick="runHealthCheck()">Refresh</button>
+      </div>
+      <div id="health-sum" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px"></div>
+      <div id="hgrid" class="hgrid"><div class="empty-s"><span class="loader"></span>Loading...</div></div>
+    </div>
+
+    <!-- WARMING -->
+    <div id="pane-warming" class="pane">
+      <div class="card">
+        <div class="card-hdr">
+          <div class="card-title">Warming pipeline</div>
+          <button class="btn gold" onclick="openWarmModal()">+ Add account</button>
+        </div>
+        <p class="card-hint">Days advance automatically. Accounts are ready after Day 14.</p>
+        <div class="tw">
+          <table>
+            <thead><tr><th>Account ID</th><th>Vendor</th><th>Buyer</th><th>Day</th><th>Progress</th><th>Phase</th><th>Budget/day</th><th>Vertical</th><th>Ready date</th><th></th></tr></thead>
+            <tbody id="warm-tb"></tbody>
+          </table>
+        </div>
+        <div id="warm-empty" class="empty-s" style="display:none">No accounts warming.</div>
+      </div>
+    </div>
+
+    <!-- BAN TRACKER -->
+    <div id="pane-bans" class="pane">
+      <div class="card">
+        <div class="card-hdr">
+          <div class="card-title">Ban Tracker</div>
+          <div class="brow">
+            <button class="btn" onclick="exportBansCSV()">↓ Export CSV</button>
+            <button class="btn gold" onclick="openBanModal()">+ Log ban</button>
+          </div>
+        </div>
+        <p class="card-hint">Centralized record of every account ban — date, vendor, buyer, days active and avg spend at the moment of ban. Analytics below feed the Vendor Scorecard.</p>
+        <div class="bans-stats" id="bans-stats"></div>
+        <div class="bans-tl" id="bans-timeline"></div>
+        <div class="bans-breakdown" id="bans-breakdown"></div>
+        <div class="tw">
+          <table>
+            <thead><tr><th>Date</th><th>Account</th><th>Vendor</th><th>Buyer</th><th>Vertical</th><th>BM</th><th>Avg spend / day</th><th>Days active</th><th>Cause</th><th>Notes</th><th></th></tr></thead>
+            <tbody id="bans-tb"></tbody>
+          </table>
+        </div>
+        <div id="bans-empty" class="empty-s" style="display:none">No bans logged yet. Click + Log ban to register your first one.</div>
+      </div>
+    </div>
+
+    <!-- ASSETS -->
+    <div id="pane-assets" class="pane">
+      <div class="card">
+        <div class="card-hdr">
+          <div class="card-title">Assets — Vendors, Buyers, Verticals</div>
+        </div>
+        <p class="card-hint">Manage your global lists of vendors, media buyers, and verticals. These appear as dropdowns in the Reconciliation tab. Vendor Scorecard below consolidates each vendor's performance using live data from Reconciliation and Ban Tracker.</p>
+        <div class="assets-grid">
+          <div class="asset-col">
+            <div class="asset-col-hdr">
+              <h4>Vendors</h4>
+              <span class="asset-count" id="vendor-count">0</span>
+            </div>
+            <div class="asset-add">
+              <input type="text" id="new-vendor" placeholder="e.g. GG, Tiger, Midas" onkeydown="if(event.key==='Enter')addAsset('vendors')"/>
+              <button class="btn gold" onclick="addAsset('vendors')">+ Add</button>
+            </div>
+            <div class="asset-list" id="vendor-list"></div>
+          </div>
+          <div class="asset-col">
+            <div class="asset-col-hdr">
+              <h4>Media Buyers</h4>
+              <span class="asset-count" id="buyer-count">0</span>
+            </div>
+            <div class="asset-add">
+              <input type="text" id="new-buyer" placeholder="e.g. Lucas, João, Pedro" onkeydown="if(event.key==='Enter')addAsset('buyers')"/>
+              <button class="btn gold" onclick="addAsset('buyers')">+ Add</button>
+            </div>
+            <div class="asset-list" id="buyer-list"></div>
+          </div>
+          <div class="asset-col">
+            <div class="asset-col-hdr">
+              <h4>Verticals</h4>
+              <span class="asset-count" id="vertical-count">0</span>
+            </div>
+            <div class="asset-add">
+              <input type="text" id="new-vertical" placeholder="e.g. Nutra, Biz Op, Ecom" onkeydown="if(event.key==='Enter')addAsset('verticals')"/>
+              <button class="btn gold" onclick="addAsset('verticals')">+ Add</button>
+            </div>
+            <div class="asset-list" id="vertical-list"></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hdr">
+          <div class="card-title">Vendor Scorecard</div>
+        </div>
+        <p class="card-hint">Live performance per vendor. Accounts active and ban metrics are calculated automatically. Compliance, response time, cost, and notes are editable inline and saved per vendor.</p>
+        <div id="vs-grid" class="vs-grid"></div>
+        <div id="vs-empty" class="empty-s" style="display:none">No vendors registered yet. Add vendors above to start tracking performance.</div>
+      </div>
+    </div>
+
+    <!-- WORKSPACES -->
+    <div id="pane-workspaces" class="pane">
+      <div class="card">
+        <div class="card-hdr">
+          <div class="card-title">Workspaces</div>
+          <button class="btn gold" onclick="openAddWs()">+ Add workspace</button>
+        </div>
+        <p class="card-hint">Each workspace connects to a different Meta API token. All workspaces are checked simultaneously every cycle.</p>
+        <div id="ws-grid" class="ws-grid"></div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="pane-settings" class="pane">
+      <div class="card">
+        <div class="card-hdr">
+          <div class="card-title">Telegram alerts</div>
+        </div>
+        <p class="card-hint">Configure your Telegram bot token and the chats that will receive alerts. You can route alerts to multiple destinations simultaneously — your personal chat, a team group, the PB group, etc.</p>
+        <div class="mfield">
+          <span class="flabel">Bot Token</span>
+          <div class="brow" style="gap:8px;flex-wrap:nowrap">
+            <input class="finp" type="password" id="tg-token-inp" placeholder="123456:ABC..." style="margin:0;flex:1" autocomplete="off"/>
+            <button class="btn gold" onclick="saveTgToken()">Save</button>
+            <button class="btn" onclick="clearTgToken()">Clear</button>
+          </div>
+          <div style="font-size:11px;color:var(--t3);margin-top:6px" id="tg-token-status">No token configured.</div>
+        </div>
+        <div class="card-hdr" style="margin-top:24px;margin-bottom:12px">
+          <div class="card-title" style="font-size:14px">Chat destinations</div>
+          <button class="btn gold" onclick="openTgChatModal()">+ Add chat</button>
+        </div>
+        <div id="tg-chats-list"></div>
+      </div>
+    </div>
+
+    <!-- REPORT -->
+    <div id="pane-report" class="pane">
+      <div class="card">
+        <div class="card-hdr">
+          <div class="card-title">Daily report</div>
+          <div class="brow">
+            <button class="btn" onclick="generateReport()">Regenerate</button>
+            <button class="btn gold" onclick="copyReport()">Copy to clipboard</button>
+            <button class="btn pdf" onclick="exportPDF()">↓ Export PDF</button>
+          </div>
+        </div>
+        <p class="card-hint">Ready to paste into Slack or Telegram. Run a check first.</p>
+        <div class="rbox" id="rbox"></div>
+      </div>
+    </div>
+
+    <!-- LOG -->
+    <div id="pane-log" class="pane">
+      <div class="two-col">
+        <div class="card">
+          <div class="card-hdr">
+            <div class="card-title">All ad accounts</div>
+            <span class="c-muted" id="acct-count" style="font-size:12px">—</span>
+          </div>
+          <div class="tw">
+            <table>
+              <thead><tr><th>Name</th><th>Vendor</th><th>Buyer</th><th>BM</th><th>Vertical</th><th>Lifetime spend</th><th>Status</th></tr></thead>
+              <tbody id="acct-tb"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-hdr">
+            <div class="card-title">System log</div>
+            <button class="btn" onclick="clearLog()">Clear</button>
+          </div>
+          <div class="log" id="slog"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
 
-<!-- MODAL ADD WS -->
+<!-- BANNER OVERLAY -->
+<div class="banner-overlay" id="banner-overlay">
+  <div class="banner-box" id="banner-box">
+    <div class="banner-icon" id="banner-icon">⏱️</div>
+    <div class="banner-title" id="banner-title">Check complete</div>
+    <div class="banner-msg" id="banner-msg"></div>
+    <button class="banner-ok" id="banner-ok">OK</button>
+  </div>
+</div>
+
+<!-- REPLACE TOKEN MODAL -->
+<div class="modal-bg" id="replace-ws-modal">
+  <div class="modal">
+    <h3>Replace token for workspace</h3>
+    <p style="color:var(--t3);font-size:13px;margin-bottom:14px">Replacing token for: <span id="replace-ws-name" style="color:var(--gold);font-weight:700">—</span></p>
+    <input type="hidden" id="replace-ws-id"/>
+    <div class="mfield"><span class="flabel">New Meta access token</span><input class="finp" type="password" id="replace-ws-token" placeholder="EAALHty9jREg..." style="margin:0" autocomplete="off"/></div>
+    <div class="errbox" id="replace-ws-err" style="margin-top:0;margin-bottom:12px"></div>
+    <div class="brow">
+      <button class="btn gold" style="flex:1;padding:10px" id="replace-token-btn" onclick="saveReplacedToken()">Replace</button>
+      <button class="btn" style="padding:10px 14px" onclick="closeReplaceToken()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD WORKSPACE MODAL -->
 <div class="modal-bg" id="add-ws-modal">
-    <div class="modal">
-        <h3 style="margin-bottom:25px; color:var(--gold); font-size:24px;">New Infrastructure Node</h3>
-        <label class="chart-label">Node Identity</label>
-        <input id="new-ws-name" class="cel" placeholder="Ex: Master Node" style="margin:10px 0 20px;">
-        <label class="chart-label">Meta Access Token</label>
-        <input id="new-ws-token" type="password" class="cel" placeholder="EAALH..." style="margin-top:10px;">
-        <div style="display:flex; gap:12px; margin-top:30px;">
-            <button class="btn btn-gold" style="flex:2" onclick="saveNewWs()">Establish Link</button>
-            <button class="btn" style="background:var(--bg-input); color:#fff; flex:1" onclick="closeModal()">Abort</button>
-        </div>
+  <div class="modal">
+    <h3>Add workspace</h3>
+    <div class="mfield"><span class="flabel">Workspace name</span><input class="finp" id="new-ws-name" placeholder="Umbra Main" style="margin:0"/></div>
+    <div class="mfield"><span class="flabel">Meta access token</span><input class="finp" type="password" id="new-ws-token" placeholder="EAALHty9jREg..." style="margin:0" autocomplete="off"/></div>
+    <div class="errbox" id="new-ws-err" style="margin-top:0;margin-bottom:12px"></div>
+    <div class="brow">
+      <button class="btn gold" style="flex:1;padding:10px" id="add-ws-btn" onclick="saveNewWorkspace()">Connect & save</button>
+      <button class="btn" style="padding:10px 14px" onclick="closeAddWs()">Cancel</button>
     </div>
+  </div>
+</div>
+
+<!-- BAN MODAL -->
+<div class="modal-bg" id="ban-modal">
+  <div class="modal" style="max-width:480px">
+    <h3>Log a ban</h3>
+    <div class="mfield"><span class="flabel">Date</span><input class="finp" type="date" id="ban-date" style="margin:0"/></div>
+    <div class="mfield"><span class="flabel">Account ID</span><input class="finp" id="ban-acct-id" placeholder="act_123456789 (auto-fills if known)" style="margin:0" oninput="banAutoFill()"/></div>
+    <div class="mfield"><span class="flabel">Account name</span><input class="finp" id="ban-acct-name" placeholder="UMBRA-NUTRA-001" style="margin:0"/></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="mfield"><span class="flabel">Vendor</span><input class="finp" id="ban-vendor" list="ban-vendors-dl" placeholder="Vendor" style="margin:0"/><datalist id="ban-vendors-dl"></datalist></div>
+      <div class="mfield"><span class="flabel">Buyer</span><input class="finp" id="ban-buyer" list="ban-buyers-dl" placeholder="Buyer" style="margin:0"/><datalist id="ban-buyers-dl"></datalist></div>
+      <div class="mfield"><span class="flabel">Vertical</span><input class="finp" id="ban-vertical" list="ban-verticals-dl" placeholder="Vertical" style="margin:0"/><datalist id="ban-verticals-dl"></datalist></div>
+      <div class="mfield"><span class="flabel">BM</span><input class="finp" id="ban-bm" placeholder="BM" style="margin:0"/></div>
+      <div class="mfield"><span class="flabel">Profile</span><input class="finp" id="ban-profile" placeholder="A-PB-001" style="margin:0"/></div>
+      <div class="mfield"><span class="flabel">Proxy</span><input class="finp" id="ban-proxy" placeholder="ip:port" style="margin:0"/></div>
+      <div class="mfield"><span class="flabel">Avg daily spend at ban</span><input class="finp" type="number" id="ban-avg-spend" placeholder="450" style="margin:0"/></div>
+      <div class="mfield"><span class="flabel">Days active</span><input class="finp" type="number" id="ban-days" placeholder="7" style="margin:0"/></div>
+    </div>
+    <div class="mfield"><span class="flabel">Cause</span><select class="finp" id="ban-cause" style="margin:0"><option>Unknown</option><option>Policy</option><option>Billing</option><option>Payment</option></select></div>
+    <div class="mfield"><span class="flabel">Notes</span><textarea class="finp" id="ban-notes" placeholder="Any context..." style="margin:0;resize:vertical;min-height:60px;font-family:inherit"></textarea></div>
+    <div class="errbox" id="ban-err" style="margin-top:0;margin-bottom:12px"></div>
+    <div class="brow">
+      <button class="btn gold" style="flex:1;padding:10px" onclick="saveBan()">Save ban</button>
+      <button class="btn" style="padding:10px 14px" onclick="closeBanModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- TELEGRAM CHAT MODAL -->
+<div class="modal-bg" id="tg-chat-modal">
+  <div class="modal">
+    <h3>Add Telegram chat</h3>
+    <div class="mfield"><span class="flabel">Friendly name</span><input class="finp" id="tg-chat-name" placeholder="Lucas Pessoal / Grupo Umbra" style="margin:0"/></div>
+    <div class="mfield"><span class="flabel">Chat ID (numeric)</span><input class="finp" id="tg-chat-id" placeholder="-1001234567890" style="margin:0"/></div>
+    <div class="errbox" id="tg-chat-err" style="margin-top:0;margin-bottom:12px"></div>
+    <div class="brow">
+      <button class="btn gold" style="flex:1;padding:10px" onclick="saveTgChat()">Save</button>
+      <button class="btn" style="padding:10px 14px" onclick="closeTgChatModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- WARMING MODAL -->
+<div class="modal-bg" id="warm-modal">
+  <div class="modal">
+    <h3>Add account to warming pipeline</h3>
+    <div class="mfield"><span class="flabel">Account ID</span><input class="finp" id="w-id" placeholder="act_123456789" style="margin:0"/></div>
+    <div class="mfield"><span class="flabel">Vendor</span><input class="finp" id="w-vendor" placeholder="Tiger Agency" style="margin:0"/></div>
+    <div class="mfield"><span class="flabel">Media Buyer</span><input class="finp" id="w-buyer" placeholder="John" style="margin:0"/></div>
+    <div class="mfield"><span class="flabel">Target Vertical</span><input class="finp" id="w-vertical" placeholder="Nutra / Biz Op" style="margin:0"/></div>
+    <div class="brow" style="margin-top:16px">
+      <button class="btn gold" style="flex:1;padding:10px" onclick="saveWarm()">Add to pipeline</button>
+      <button class="btn" style="padding:10px 14px" onclick="closeWarmModal()">Cancel</button>
+    </div>
+  </div>
 </div>
 
 <script>
-// ═══ CONFIG ═══
-const TG_TOKEN = '8700935512:AAF1oz_Ynv4cCq9lyA_7fXaAIAoXPdSweBw';
-const TG_CHAT = '5245753077';
-let workspaces = [];
-let activeWsId = 'all';
-let timerSecs = 480;
-let charts = { spend: null, vendor: null };
+// ═══ SECURITY ════════════════════════════════════════════════════════════
+const MAX_ATTEMPTS=5, LOCKOUT_MS=15*60*1000;
+let loginAttempts=0, lockedUntil=0;
 
-// ═══ AUTH ═══
-async function doLogin() {
-    const pw = document.getElementById('pw-inp').value;
-    const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw)).then(b => Array.from(new Uint8Array(b)).map(x => x.toString(16).padStart(2, '0')).join(''));
-    const stored = localStorage.getItem('umbra_pw');
-    if (!stored) { localStorage.setItem('umbra_pw', hash); initApp(); }
-    else if (hash === stored) initApp();
-    else document.getElementById('login-err').style.display = 'block';
+function sanitize(s){
+  if(typeof s!=='string') return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+          .replace(/"/g,'&quot;').replace(/'/g,'&#x27;').trim().slice(0,512);
+}
+function sanitizeNum(v){
+  let s=String(v).trim();
+  const hasComma=s.includes(','), hasDot=s.includes('.');
+  if(hasComma&&hasDot){
+    // Both present — last one is decimal separator
+    const lastComma=s.lastIndexOf(','), lastDot=s.lastIndexOf('.');
+    if(lastComma>lastDot){s=s.replace(/\./g,'').replace(',','.');}
+    else{s=s.replace(/,/g,'');}
+  } else if(hasComma){
+    // Only commas — if any comma followed by exactly 3 digits = thousand sep
+    s=(/,\d{3}/).test(s)?s.replace(/,/g,''):s.replace(',','.');
+  } else if(hasDot){
+    // Multiple dots = all thousand separators (e.g. 1.234.567)
+    if((s.match(/\./g)||[]).length>1){s=s.replace(/\./g,'');}
+    // Single dot followed by exactly 3 digits = thousand sep (e.g. 28.900)
+    else if(/^\d+\.\d{3}$/.test(s)){s=s.replace('.','');}
+    // Otherwise it's a decimal point (e.g. 28.90)
+  }
+  const n=parseFloat(s);
+  return isNaN(n)||n<0?0:Math.min(n,999999999);
+}
+async function hashPw(pw){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pw));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function doLogin(){
+  const now=Date.now();
+  if(now<lockedUntil){showLoginErr('Locked. Try again in '+Math.ceil((lockedUntil-now)/60000)+' min.');return;}
+  const pw=document.getElementById('pw-inp').value;
+  if(!pw||pw.length<4){showLoginErr('Password must be at least 4 characters.');return;}
+  const hash=await hashPw(pw);
+  const stored=localStorage.getItem('umbra_pw');
+  if(!stored){localStorage.setItem('umbra_pw',hash);startSession();return;}
+  if(hash===stored){loginAttempts=0;startSession();}
+  else{
+    loginAttempts++;
+    if(loginAttempts>=MAX_ATTEMPTS){lockedUntil=Date.now()+LOCKOUT_MS;showLoginErr('Locked for 15 min after '+MAX_ATTEMPTS+' failed attempts.');}
+    else showLoginErr('Wrong password. '+(MAX_ATTEMPTS-loginAttempts)+' attempt(s) remaining.');
+  }
+}
+function showLoginErr(m){const e=document.getElementById('login-err');e.textContent=m;e.style.display='block';}
+function startSession(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('tabs').style.display='flex';
+  document.getElementById('login-hint').textContent='Password set.';
+  loadAllStorage();
+  loadAssets();
+  localStorage.setItem('umbra_session', JSON.stringify({expires: Date.now() + 24*60*60*1000}));
+  addLog('Session started','ok');
+  renderWorkspaceList();
+  renderWorkspacesView();
+  renderAssetsView();
+  if(workspaces.length>0){
+    switchWorkspace(workspaces[0].id);
+  } else {
+    switchTab('workspaces');
+  }
+}
+function doLogout(){
+  clearAllTimers();
+  localStorage.removeItem('umbra_session');
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('pw-inp').value='';
 }
 
-function initApp() {
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app-ui').style.display = 'block';
-    loadData();
-    initCharts();
-    setInterval(tick, 1000);
-    runSync();
+// ═══ THEME ═══════════════════════════════════════════════════════════════
+let currentTheme=localStorage.getItem('umbra_theme')||'dark';
+function applyTheme(th){
+  currentTheme=th;
+  document.documentElement.setAttribute('data-theme',th);
+  const label=th==='dark'?'☀️ Light':'🌙 Dark';
+  ['theme-btn','login-theme-btn'].forEach(id=>{const b=document.getElementById(id);if(b)b.textContent=label;});
+  localStorage.setItem('umbra_theme',th);
 }
+function toggleTheme(){applyTheme(currentTheme==='dark'?'light':'dark');}
+applyTheme(currentTheme);
 
-// ═══ CORE LOGIC ═══
-function loadData() {
-    const d = localStorage.getItem('umbra_workspaces');
-    if (d) workspaces = JSON.parse(d).map(w => ({ ...w, accounts: [], spends: {}, status: 'idle' }));
-    renderDropdown();
-    renderInfra();
-}
+// ═══ TELEGRAM ════════════════════════════════════════════════════════════
+// Legacy fallback values — used silently until the user configures Settings.
+const TG_LEGACY={token:'8700935512:AAF1oz_Ynv4cCq9lyA_7fXaAIAoXPdSweBw',chat:'5245753077'};
+let tgConfig={token:'',chats:[]}; // chats: [{id,name,chatId,enabled}]
 
-function saveData() {
-    const toSave = workspaces.map(w => ({ id:w.id, name:w.name, token:w.token, acctMeta:w.acctMeta||{}, balances:w.balances||{}, alertState:w.alertState||{} }));
-    localStorage.setItem('umbra_workspaces', JSON.stringify(toSave));
-}
-
-async function runSync() {
-    document.getElementById('sync-progress').style.display = 'block';
-    const bar = document.getElementById('sync-bar');
-    bar.style.width = '10%';
-
-    for (let ws of workspaces) {
-        try {
-            const r = await fetch(`https://graph.facebook.com/v19.0/me/adaccounts?fields=id,name,account_status,currency,amount_spent&limit=50&access_token=${ws.token}`);
-            const d = await r.json();
-            if (d.data) {
-                ws.accounts = d.data;
-                await Promise.all(ws.accounts.map(async acc => {
-                    try {
-                        const rs = await fetch(`https://graph.facebook.com/v19.0/${acc.id}/insights?fields=spend&date_preset=today&access_token=${ws.token}`);
-                        const ds = await rs.json();
-                        ws.spends[acc.id] = parseFloat(ds.data?.[0]?.spend || 0);
-                        processAlert(ws, acc);
-                    } catch(e) {}
-                }));
-            }
-        } catch(e) { console.error(e); }
+function loadTgConfig(){
+  try{
+    const d=localStorage.getItem('umbra_tg_config');
+    if(d){
+      const parsed=JSON.parse(d);
+      tgConfig.token=parsed.token||'';
+      tgConfig.chats=Array.isArray(parsed.chats)?parsed.chats:[];
     }
-    bar.style.width = '100%';
-    setTimeout(() => document.getElementById('sync-progress').style.display = 'none', 500);
-    renderAll();
-    updateCharts();
-    generateBriefing();
+  }catch(e){tgConfig={token:'',chats:[]};}
+}
+function saveTgConfig(){try{localStorage.setItem('umbra_tg_config',JSON.stringify(tgConfig));}catch(e){}}
+
+function tgActiveTargets(){
+  const token=tgConfig.token||TG_LEGACY.token;
+  let chats=tgConfig.chats.filter(c=>c.enabled&&c.chatId);
+  // Silent legacy mode: never configured anything → route to legacy chat
+  if(chats.length===0&&!tgConfig.token&&tgConfig.chats.length===0){
+    chats=[{name:'Legacy',chatId:TG_LEGACY.chat,enabled:true}];
+  }
+  return {token,chats};
 }
 
-function processAlert(ws, acc) {
-    const bal = ws.balances[acc.id] || 0;
-    const sp = ws.spends[acc.id] || 0;
-    const rem = bal - sp;
-    const layer = (rem < 0) ? 5 : (bal > 0 && (rem/bal) <= 0.05) ? 3 : 0;
-    if (!ws.alertState) ws.alertState = {};
-    if (layer > 0 && layer > (ws.alertState[acc.id] || 0)) {
-        const msg = `🚨 *UMBRA ALERT* 🚨\n\n*Account:* ${acc.name}\n*WS:* ${ws.name}\n*Status:* LAYER ${layer}\n*Remaining:* $${Math.round(rem)}`;
-        fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: TG_CHAT, text: msg, parse_mode: 'Markdown' }) });
-    }
-    ws.alertState[acc.id] = layer;
-}
-
-function renderAll() {
-    const tb = document.getElementById('recon-tb');
-    const hg = document.getElementById('h-grid');
-    tb.innerHTML = ''; hg.innerHTML = '';
-    let totalB = 0;
-
-    workspaces.forEach(ws => {
-        if (activeWsId !== 'all' && activeWsId !== ws.id) return;
-        ws.accounts.forEach(acc => {
-            const bal = ws.balances[acc.id] || 0;
-            const sp = ws.spends[acc.id] || 0;
-            const rem = bal - sp;
-            totalB += bal;
-            const meta = ws.acctMeta[acc.id] || {vendor:'', buyer:'', vertical:''};
-
-            tb.innerHTML += `<tr>
-                <td><span class="ws-tag">${ws.name}</span><br><b>${acc.name}</b><br><small style="color:var(--text-muted)">${acc.id}</small></td>
-                <td><input class="cel" value="${meta.vendor}" onchange="upM('${ws.id}','${acc.id}','vendor',this.value)"></td>
-                <td><input class="cel" value="${meta.buyer}" onchange="upM('${ws.id}','${acc.id}','buyer',this.value)"></td>
-                <td><input class="cel" value="${meta.vertical}" onchange="upM('${ws.id}','${acc.id}','vertical',this.value)"></td>
-                <td><input class="cel" type="number" value="${bal}" onchange="upB('${ws.id}','${acc.id}',this.value)"></td>
-                <td style="font-family:monospace">$${Math.round(sp).toLocaleString()}</td>
-                <td style="color:${rem < 0 ? 'var(--red)' : 'var(--green)'}; font-weight:800">$${Math.round(rem).toLocaleString()}</td>
-                <td><span class="pill ${rem < 0 ? 'p-l5' : ''}">${rem < 0 ? 'L5' : 'OK'}</span></td>
-            </tr>`;
-
-            hg.innerHTML += `<div class="h-card ${acc.account_status === 1 ? '' : 'disabled'}">
-                <div class="ws-tag">${ws.name}</div>
-                <div style="font-weight:800; font-size:18px; margin:10px 0;">${acc.name}</div>
-                <div class="pill">${acc.account_status === 1 ? 'ACTIVE' : 'DISABLED'}</div>
-                <div style="margin-top:15px; font-size:12px; color:var(--text-muted)">${meta.vendor} | ${meta.buyer}</div>
-            </div>`;
-        });
+// ═══ SOUND ALERTS ════════════════════════════════════════════════════════
+function playAlert(layer){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const patterns={
+      3:[[440,0.1],[0,0.05],[440,0.1],[0,0.05],[440,0.2]],      // L3: 3 beeps
+      4:[[330,0.15],[0,0.05],[330,0.15],[0,0.05],[220,0.4]],    // L4: descending urgent
+      5:[[880,0.1],[660,0.1],[880,0.1],[660,0.1],[880,0.1],[660,0.1],[440,0.5]], // L5: rapid alarm
+    };
+    const seq=patterns[layer];
+    if(!seq) return;
+    let time=ctx.currentTime;
+    seq.forEach(([freq,dur])=>{
+      if(freq===0){time+=dur;return;}
+      const osc=ctx.createOscillator();
+      const gain=ctx.createGain();
+      osc.connect(gain);gain.connect(ctx.destination);
+      osc.frequency.value=freq;
+      osc.type=layer===5?'sawtooth':'sine';
+      gain.gain.setValueAtTime(layer===5?0.3:0.2,time);
+      gain.gain.exponentialRampToValueAtTime(0.001,time+dur);
+      osc.start(time);osc.stop(time+dur);
+      time+=dur;
     });
-    document.getElementById('m-bal').textContent = `$${Math.round(totalB).toLocaleString()}`;
+  }catch(e){console.log('Audio not available');}
 }
 
-// ═══ UTILS ═══
-function upM(wid, aid, k, v) { const ws = workspaces.find(x => x.id === wid); if(!ws.acctMeta[aid]) ws.acctMeta[aid]={}; ws.acctMeta[aid][k]=v; saveData(); }
-function upB(wid, aid, v) { const ws = workspaces.find(x => x.id === wid); ws.balances[aid]=parseFloat(v)||0; saveData(); renderAll(); updateCharts(); }
-function tick() { timerSecs--; const m=Math.floor(timerSecs/60), s=timerSecs%60; document.getElementById('m-cd').textContent=`${m}:${s<10?'0':''}${s}`; if(timerSecs<=0){ timerSecs=480; runSync(); } }
-function switchTab(id, el) { document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on')); document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on')); document.getElementById('pane-'+id).classList.add('on'); el.classList.add('on'); }
-function openModal() { document.getElementById('add-ws-modal').style.display='flex'; }
-function closeModal() { document.getElementById('add-ws-modal').style.display='none'; }
-function saveNewWs() { const n=document.getElementById('new-ws-name').value, t=document.getElementById('new-ws-token').value; if(!n||!t) return; workspaces.push({id:'ws_'+Date.now(), name:n, token:t, acctMeta:{}, balances:{}, alertState:{}, spends:{}, accounts:[]}); saveData(); closeModal(); renderDropdown(); renderInfra(); runSync(); }
-function deleteWs(id) { if(confirm("Delete Node?")) { workspaces = workspaces.filter(w=>w.id!==id); saveData(); renderDropdown(); renderInfra(); renderAll(); } }
-function renderDropdown() { const s = document.getElementById('ws-select'); s.innerHTML = '<option value="all">🌐 GLOBAL VIEW</option>'; workspaces.forEach(w => { s.innerHTML += `<option value="${w.id}">${w.name}</option>`; }); }
-function renderInfra() { const tb = document.getElementById('ws-list-tb'); tb.innerHTML = ''; workspaces.forEach(w => { tb.innerHTML += `<tr><td><b>${w.name}</b></td><td><code>${w.token.substring(0,25)}...</code></td><td><button class="btn" style="background:#ef444420; color:#ef4444;" onclick="deleteWs('${w.id}')">Delete Node</button></td></tr>`; }); }
-function switchWs(id) { activeWsId = id; renderAll(); }
-function doLogout() { localStorage.removeItem('umbra_pw'); location.reload(); }
-function generateBriefing() {
-    let risk = [], bans = [];
-    workspaces.forEach(ws => ws.accounts.forEach(acc => {
-        if ((ws.balances[acc.id] - ws.spends[acc.id]) < 0) risk.push(`${acc.name} (${ws.name})`);
-        if (acc.account_status !== 1) bans.push(`${acc.name} (${ws.name})`);
+let alertLang='en';
+
+async function sendWA(body){
+  const {token,chats}=tgActiveTargets();
+  if(!token){addLog('Telegram: no bot token configured','warn');return;}
+  if(chats.length===0){addLog('Telegram: no active chats configured','warn');return;}
+  for(const c of chats){
+    try{
+      const r=await fetch('https://api.telegram.org/bot'+token+'/sendMessage',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({chat_id:c.chatId,text:body,parse_mode:'Markdown'})
+      });
+      const d=await r.json();
+      if(d.ok) addLog('Telegram ✓ '+(c.name||c.chatId),'ok');
+      else addLog('Telegram error ('+(c.name||c.chatId)+'): '+d.description,'err');
+    }catch(e){addLog('Telegram failed ('+(c.name||c.chatId)+'): '+e.message,'err');}
+  }
+}
+
+// ═══ ALERT MESSAGES ══════════════════════════════════════════════════════
+const MSGS={
+  l1:(ws,n,v,b,rem,pct,sym)=>`*⚠️ UMBRA — ATTENTION*\n*${'─'.repeat(28)}*\n*Workspace:* *${ws}*\n*Account:* *${n}*\n*Vendor:* *${v||'—'}* | *Buyer:* *${b||'—'}*\n*${'─'.repeat(28)}*\n*Balance at ${pct}% → ${sym}${Math.round(rem)} remaining*\n\n*🎯 NEXT ACTION:*\n*Notify vendor that top-up will be needed in the next few days. Begin scheduling.*`,
+  l2:(ws,n,v,b,rem,pct,sym)=>`*🔶 UMBRA — ALERT*\n*${'─'.repeat(28)}*\n*Workspace:* *${ws}*\n*Account:* *${n}*\n*Vendor:* *${v||'—'}* | *Buyer:* *${b||'—'}*\n*${'─'.repeat(28)}*\n*Balance at ${pct}% → ${sym}${Math.round(rem)} remaining*\n\n*🎯 NEXT ACTION:*\n*Request top-up TODAY. Confirm timing with vendor — valid within 24h.*`,
+  l3:(ws,n,v,b,rem,pct,sym)=>`*🔴 UMBRA — CRITICAL*\n*${'─'.repeat(28)}*\n*Workspace:* *${ws}*\n*Account:* *${n}*\n*Vendor:* *${v||'—'}* | *Buyer:* *${b||'—'}*\n*${'─'.repeat(28)}*\n*Balance at ${pct}% → ${sym}${Math.round(rem)} remaining*\n\n*🚨 NEXT ACTION:*\n*URGENT — direct contact with vendor. Top-up must process in the next hours.*`,
+  l4:(ws,n,v,b,sym)=>`*🚨 UMBRA — ACCOUNT ZEROED*\n*${'─'.repeat(28)}*\n*Workspace:* *${ws}*\n*Account:* *${n}*\n*Vendor:* *${v||'—'}* | *Buyer:* *${b||'—'}*\n*${'─'.repeat(28)}*\n*Balance ZERO. Spend stopped.*\n\n*🚨🚨 NEXT ACTION:*\n*Contact vendor IMMEDIATELY. Expedite top-up to restart spend.*`,
+  l5:(ws,n,v,b,amt,sym)=>`*🚨🚨 UMBRA — EMERGENCY*\n*${'─'.repeat(28)}*\n*Workspace:* *${ws}*\n*Account:* *${n}*\n*Vendor:* *${v||'—'}* | *Buyer:* *${b||'—'}*\n*${'─'.repeat(28)}*\n*Spend EXCEEDED balance by ${sym}${Math.abs(Math.round(amt))}*\n\n*🔥 NEXT ACTION:*\n*Contact vendor NOW. Confirm overspend and align on settlement immediately.*`,
+  disabled:(ws,n,v,b)=>`*🔴 UMBRA — ACCOUNT DISABLED*\n*${'─'.repeat(28)}*\n*Workspace:* *${ws}*\n*Account:* *${n}*\n*Vendor:* *${v||'—'}* | *Buyer:* *${b||'—'}*\n*${'─'.repeat(28)}*\n*🎯 NEXT ACTION:*\n*Request replacement account + balance transfer from vendor immediately.*`,
+  warn:(ws,n,v,b)=>`*⚠️ UMBRA — WARNING*\n*${'─'.repeat(28)}*\n*Workspace:* *${ws}*\n*Account:* *${n}*\n*Vendor:* *${v||'—'}* | *Buyer:* *${b||'—'}*\n*${'─'.repeat(28)}*\n*Billing or policy issue detected.*\n\n*🎯 NEXT ACTION:*\n*Investigate via Meta Business Suite. Resolve or escalate to vendor within 24h.*`,
+  change:(ws,n,v,b,s1,s2)=>`*🚨 UMBRA — STATUS CHANGE*\n*${'─'.repeat(28)}*\n*Workspace:* *${ws}*\n*Account:* *${n}*\n*Vendor:* *${v||'—'}* | *Buyer:* *${b||'—'}*\n*${'─'.repeat(28)}*\n*Status: ${s1} → ${s2}*\n\n*🚨 NEXT ACTION:*\n*Check account immediately. Determine if vendor escalation is required.*`,
+  repeat:(ws,n,v,b,lbl)=>`*⏰ UMBRA — 24h REMINDER*\n*${'─'.repeat(28)}*\n*Workspace:* *${ws}*\n*Account:* *${n}*\n*Vendor:* *${v||'—'}* | *Buyer:* *${b||'—'}*\n*${'─'.repeat(28)}*\n*Issue persists: ${lbl}*\n\n*🎯 NEXT ACTION:*\n*Escalate. Issue is past 24h with no resolution.*`,
+  tokenExpired:(ws)=>`*🚨🚨 UMBRA — TOKEN EXPIRED*\n*${'─'.repeat(28)}*\n*Workspace:* *${ws}*\n*${'─'.repeat(28)}*\n*CRITICAL: Meta API token is invalid or expired.*\n\n*🔥 NEXT ACTION:*\n*Renew token immediately to restore monitoring on this workspace.*`,
+  checkDone:(results)=>`*✅ UMBRA — Cycle Check Complete*\n*${'─'.repeat(28)}*\n${results}\n*${'─'.repeat(28)}*\n*Next check scheduled.*`,
+  dsl90:(ws,n,v,b,sp,dsl,sym)=>`*🟠 UMBRA — DSL APPROACHING*\n*${'─'.repeat(28)}*\n*Workspace:* *${ws}*\n*Account:* *${n}*\n*Vendor:* *${v||'—'}* | *Buyer:* *${b||'—'}*\n*${'─'.repeat(28)}*\n*Spend ${sym}${Math.round(sp)} / DSL ${sym}${Math.round(dsl)} (${Math.round(sp/dsl*100)}%)*\n\n*🎯 NEXT ACTION:*\n*Account is near the DSL cap. Decide whether to throttle or push for a DSL increase.*`,
+  dslCap:(ws,n,v,b,sp,dsl,sym)=>`*🛑 UMBRA — DSL CAP HIT*\n*${'─'.repeat(28)}*\n*Workspace:* *${ws}*\n*Account:* *${n}*\n*Vendor:* *${v||'—'}* | *Buyer:* *${b||'—'}*\n*${'─'.repeat(28)}*\n*Spend ${sym}${Math.round(sp)} / DSL ${sym}${Math.round(dsl)} → ${Math.round(sp/dsl*100)}%*\n\n*🔥 NEXT ACTION:*\n*Account hit Daily Spend Limit. Spend stops until midnight or DSL increase.*`,
+};
+
+// ═══ WORKSPACE STATE ══════════════════════════════════════════════════════
+// workspaces: [{id, name, token, accounts, spends, prevStatus, acctMeta, alertState, balances, color}]
+let workspaces=[];
+let activeWsId=null;
+let autoTimer=null, autoSecs=300;
+// Rate limit tracking per token
+let rlTracker={}; // {token: {calls:0, windowStart:Date.now()}}
+const RL_MAX=180; // stay under 200/hr per token
+const RL_WINDOW=3600000;
+
+const WS_COLORS=['#C8A96E','#4A9EE8','#2DBE7A','#E8922A','#E24B4A','#A855F7','#EC4899','#14B8A6'];
+
+function getWs(id){return workspaces.find(w=>w.id===id);}
+function getActiveWs(){return getWs(activeWsId);}
+
+function canCallApi(token){
+  const now=Date.now();
+  if(!rlTracker[token]) rlTracker[token]={calls:0,windowStart:now};
+  const t=rlTracker[token];
+  if(now-t.windowStart>RL_WINDOW){t.calls=0;t.windowStart=now;}
+  if(t.calls>=RL_MAX){
+    addLog('Rate limit reached for token — skipping check','warn');
+    return false;
+  }
+  return true;
+}
+function trackApiCall(token){
+  if(!rlTracker[token]) rlTracker[token]={calls:0,windowStart:Date.now()};
+  rlTracker[token].calls++;
+}
+function getRlPct(token){
+  if(!rlTracker[token]) return 0;
+  const t=rlTracker[token];
+  const now=Date.now();
+  if(now-t.windowStart>RL_WINDOW) return 0;
+  return Math.min(100,Math.round((t.calls/RL_MAX)*100));
+}
+
+// ═══ STORAGE ══════════════════════════════════════════════════════════════
+function saveAllStorage(){
+  try{
+    const toSave=workspaces.map(w=>({
+      id:w.id,name:w.name,token:w.token,color:w.color,
+      acctMeta:w.acctMeta,balances:w.balances,alertState:w.alertState,
+      dslAlertState:w.dslAlertState||{}
     }));
-    document.getElementById('b-box').textContent = `STRATEGIC OPS REPORT\n${"━".repeat(30)}\nRISK: ${risk.length > 0 ? "CRITICAL" : "NOMINAL"}\nACTION: ${risk.length > 0 ? "TOP-UP REQUIRED" : "SCALE ALLOWED"}\n\nOVERSPENT:\n${risk.join('\n') || "None"}\n\nBANS:\n${bans.join('\n') || "None"}`;
+    localStorage.setItem('umbra_workspaces',JSON.stringify(toSave));
+  }catch(e){addLog('Storage save failed: '+e.message,'err');}
+}
+function loadAllStorage(){
+  try{
+    const d=localStorage.getItem('umbra_workspaces');
+    if(!d){workspaces=[];return;}
+    const saved=JSON.parse(d);
+    workspaces=saved.map(w=>({
+      ...w,
+      accounts:[],spends:{},prevStatus:{},
+      acctMeta:w.acctMeta||{},
+      balances:w.balances||{},
+      alertState:w.alertState||{},
+      dslAlertState:w.dslAlertState||{},
+      status:'disconnected' // will reconnect
+    }));
+  }catch(e){workspaces=[];addLog('Storage load failed','err');}
 }
 
-function initCharts() {
-    charts.spend = new ApexCharts(document.querySelector("#spend-chart"), {
-        series: [{ name: 'Spend', data: [31, 40, 28, 51, 42, 109, 100] }],
-        chart: { type: 'area', height: 180, toolbar: {show:false}, sparkline: {enabled: true} },
-        colors: ['#d4a853'], stroke: { curve: 'smooth', width: 3 }, fill: { type: 'gradient', gradient: { opacityFrom: 0.6, opacityTo: 0.1 } }
-    });
-    charts.vendor = new ApexCharts(document.querySelector("#vendor-chart"), {
-        series: [1], labels: ['Nodes'], chart: { type: 'donut', height: 180 },
-        colors: ['#d4a853', '#3b82f6', '#10b981', '#f59e0b'], legend: {show:false}, dataLabels: {enabled:false}
-    });
-    charts.spend.render(); charts.vendor.render();
+// ═══ WORKSPACE MANAGEMENT ════════════════════════════════════════════════
+function createWorkspace(name, token){
+  const id='ws_'+Date.now();
+  const color=WS_COLORS[workspaces.length % WS_COLORS.length];
+  workspaces.push({id,name,token,color,accounts:[],spends:{},prevStatus:{},
+    acctMeta:{},balances:{},alertState:{},dslAlertState:{},status:'disconnected'});
+  saveAllStorage();
+  return id;
 }
 
-function updateCharts() {
-    const series = workspaces.map(w => w.accounts.length);
-    const labels = workspaces.map(w => w.name);
-    if(series.length > 0) charts.vendor.updateOptions({ series, labels });
+function deleteWorkspace(id){
+  workspaces=workspaces.filter(w=>w.id!==id);
+  if(activeWsId===id) activeWsId=workspaces.length>0?workspaces[0].id:null;
+  saveAllStorage();
+  renderWsDropdown();
+  if(typeof renderWorkspacesView==='function') renderWorkspacesView();
+  if(workspaces.length===0){
+    // No workspaces left — go to workspaces tab to add new one
+    document.getElementById('conn-dot').classList.remove('on');
+    document.getElementById('conn-label').textContent='Not connected';
+    switchTab('workspaces');
+  } else if(activeWsId){
+    switchWorkspace(activeWsId);
+  }
+  addLog('Workspace deleted','info');
 }
+
+async function connectWorkspace(id){
+  const ws=getWs(id);
+  if(!ws) return;
+  if(!canCallApi(ws.token)){return;}
+  ws.status='connecting';
+  renderWsDropdown();
+  try{
+    trackApiCall(ws.token);
+    const r=await fetch('https://graph.facebook.com/v21.0/me/adaccounts?fields=id,name,account_status,currency,amount_spent,disable_reason&limit=25&access_token='+ws.token);
+    const d=await r.json();
+    if(d.error){
+      ws.status='error';
+      ws.errorMsg=d.error.message;
+      renderWsDropdown();
+      addLog('['+ws.name+'] API error: '+d.error.message,'err');
+      // Check if token expired
+      if(d.error.code===190){
+        sendWA(MSGS.tokenExpired(ws.name));
+        showBanner('critical','🔴','Token Expired','Workspace "'+ws.name+'" has an expired or invalid token. Renew it immediately to restore monitoring.','OK');
+      }
+      return;
+    }
+    ws.accounts=d.data||[];
+    ws.status='connected';
+    ws.accounts.forEach(a=>{
+      if(!ws.prevStatus[a.id]) ws.prevStatus[a.id]=a.account_status;
+      if(!ws.acctMeta[a.id]) ws.acctMeta[a.id]={vendor:'',buyer:'',bm:'',vertical:'',dolphinProfile:'',proxy:'',dsl:''};
+    });
+    saveAllStorage();
+    renderWsDropdown();
+    addLog('['+ws.name+'] Connected — '+ws.accounts.length+' accounts','ok');
+    // Only render if this is still the active workspace (race condition guard)
+    if(activeWsId===id) renderActiveWorkspace();
+  }catch(e){
+    ws.status='error';ws.errorMsg=e.message;
+    renderWsDropdown();
+    addLog('['+ws.name+'] Connection failed: '+e.message,'err');
+  }
+}
+
+function switchWorkspace(id){
+  activeWsId=id;
+  renderWsDropdown();
+  const ws=getWs(id);
+  if(!ws) return;
+  if(ws.status!=='connected') connectWorkspace(id);
+  else renderActiveWorkspace();
+}
+
+function renderActiveWorkspace(){
+  const ws=getActiveWs();
+  if(!ws||ws.status!=='connected') return;
+  document.getElementById('m-active').textContent=ws.accounts.filter(a=>a.account_status===1).length;
+  document.getElementById('tb-recon').textContent=ws.accounts.length;
+  document.getElementById('acct-count').textContent=ws.accounts.length+' accounts';
+  document.getElementById('conn-label').textContent='Connected — '+ws.accounts.length+' accounts';
+  document.getElementById('conn-dot').classList.add('on');
+  document.getElementById('tabs').style.display='flex';
+  buildReconRows();
+  updateAllRows();
+  renderAccountsList();
+  runHealthCheck();
+  startAutoRefresh();
+}
+
+// ═══ WORKSPACE UI ════════════════════════════════════════════════════════
+function renderWsDropdown(){
+  const sel=document.getElementById('ws-select');
+  const tbWs=document.getElementById('tb-ws');
+  if(tbWs) tbWs.textContent=workspaces.length;
+  if(!sel) return;
+  sel.innerHTML='';
+  workspaces.forEach(w=>{
+    const opt=document.createElement('option');
+    opt.value=w.id;
+    opt.textContent=(w.status==='error'?'⚠️ ':w.status==='connected'?'● ':w.status==='connecting'?'◌ ':'○ ')+w.name;
+    if(w.id===activeWsId) opt.selected=true;
+    sel.appendChild(opt);
+  });
+  if(workspaces.length===0){
+    const opt=document.createElement('option');
+    opt.textContent='No workspaces';
+    sel.appendChild(opt);
+  }
+}
+
+function renderWorkspaceList(){
+  // Legacy compat — just trigger workspaces view if it exists
+  if(typeof renderWorkspacesView==='function') renderWorkspacesView();
+}
+
+// ═══ ADD WORKSPACE MODAL ══════════════════════════════════════════════════
+function openAddWs(){
+  document.getElementById('new-ws-name').value='';
+  document.getElementById('new-ws-token').value='';
+  document.getElementById('new-ws-err').style.display='none';
+  document.getElementById('add-ws-modal').classList.add('open');
+}
+function closeAddWs(){document.getElementById('add-ws-modal').classList.remove('open');}
+
+async function saveNewWorkspace(){
+  const name=sanitize(document.getElementById('new-ws-name').value.trim());
+  const token=document.getElementById('new-ws-token').value.trim();
+  const errEl=document.getElementById('new-ws-err');
+  if(!name){errEl.textContent='Please enter a workspace name.';errEl.style.display='block';return;}
+  if(!token){errEl.textContent='Please enter an access token.';errEl.style.display='block';return;}
+  const btn=document.getElementById('add-ws-btn');
+  btn.disabled=true;btn.innerHTML='<span class="loader"></span>Connecting...';
+  // Test token before saving
+  try{
+    const r=await fetch('https://graph.facebook.com/v21.0/me/adaccounts?fields=id,name,account_status,currency,amount_spent&limit=25&access_token='+token);
+    const d=await r.json();
+    if(d.error){errEl.textContent='API error: '+d.error.message;errEl.style.display='block';btn.disabled=false;btn.textContent='Connect & save';return;}
+    const id=createWorkspace(name,token);
+    const ws=getWs(id);
+    ws.accounts=d.data||[];
+    ws.status='connected';
+    ws.accounts.forEach(a=>{ws.prevStatus[a.id]=a.account_status;ws.acctMeta[a.id]={vendor:'',buyer:'',bm:'',vertical:'',dolphinProfile:'',proxy:'',dsl:''}});
+    saveAllStorage();
+    closeAddWs();
+    renderWorkspaceList();
+    renderWsDropdown();
+    switchWorkspace(id);
+    addLog('Workspace "'+name+'" added — '+ws.accounts.length+' accounts','ok');
+  }catch(e){errEl.textContent='Connection failed: '+e.message;errEl.style.display='block';}
+  btn.disabled=false;btn.textContent='Connect & save';
+}
+
+// ═══ BANNER ═══════════════════════════════════════════════════════════════
+function showBanner(type,icon,title,msg,btnText,callback){
+  const overlay=document.getElementById('banner-overlay');
+  const box=document.getElementById('banner-box');
+  document.getElementById('banner-icon').textContent=icon;
+  document.getElementById('banner-title').textContent=title;
+  document.getElementById('banner-msg').textContent=msg;
+  const btn=document.getElementById('banner-ok');
+  btn.textContent=btnText||'OK';
+  box.className='banner-box '+(type||'info');
+  btn.className='banner-ok'+(type==='critical'?' danger':'');
+  overlay.classList.add('show');
+  btn.onclick=()=>{overlay.classList.remove('show');if(callback)callback();};
+}
+
+// ═══ UTILS ════════════════════════════════════════════════════════════════
+const fmt=n=>(n===null||n===undefined||isNaN(n))?'—':'$'+Math.round(n).toLocaleString();
+const fmt0=n=>'$'+Math.round(n||0).toLocaleString();
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
+const addDays=(d,n)=>{const dt=new Date(d);dt.setDate(dt.getDate()+n);return dt.toISOString().slice(0,10)};
+const fmtTime=()=>new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+
+let logCount=0;
+function addLog(msg,tp='info'){
+  logCount++;
+  const el=document.getElementById('tb-log');
+  if(el) el.textContent=logCount>99?'99+':logCount;
+  const log=document.getElementById('slog');
+  if(!log) return;
+  const ts=new Date().toTimeString().slice(0,8);
+  const d=document.createElement('div');
+  d.className='ll l'+tp;
+  d.textContent='['+ts+'] '+sanitize(msg);
+  log.prepend(d);
+}
+function clearLog(){
+  document.getElementById('slog').innerHTML='';
+  logCount=0;
+  const el=document.getElementById('tb-log');
+  if(el) el.textContent='0';
+  addLog('Log cleared','muted');
+}
+
+function sPill(code){
+  const map={1:['Active','p-ok'],2:['Disabled','p-danger'],3:['Unsettled','p-warn'],
+    9:['Grace period','p-warn'],100:['Pending closure','p-warn'],101:['Closed','p-danger']};
+  const [l,c]=map[code]||['Status '+code,'p-gray'];
+  return'<span class="pill '+c+'">'+l+'</span>';
+}
+function layerPill(layer){
+  if(!layer||layer===0) return'<span class="pill p-info">Enter balance</span>';
+  const cfg=[null,['L1 — 20%','p-l1'],['L2 — 10%','p-l2'],['L3 — 5%','p-l3'],['L4 — Zero','p-l4'],['L5','p-l5']];
+  const [l,c]=cfg[layer]||['—','p-gray'];
+  return'<span class="pill '+c+'">'+l+'</span>';
+}
+function rowClass(layer){return['','rwatch','rwarn','rwarn','rdanger','rdanger'][layer]||'';}
+function dslPill(usagePct){
+  if(!isFinite(usagePct)) return '<span class="pill p-gray">—</span>';
+  const v=Math.round(usagePct);
+  if(usagePct>=100) return '<span class="pill p-l5">'+v+'%</span>';
+  if(usagePct>90) return '<span class="pill p-danger">'+v+'%</span>';
+  if(usagePct>=70) return '<span class="pill p-warn">'+v+'%</span>';
+  return '<span class="pill p-ok">'+v+'%</span>';
+}
+
+// ═══ API ══════════════════════════════════════════════════════════════════
+async function apiFetchWs(ws, path){
+  if(!canCallApi(ws.token)) throw new Error('Rate limit');
+  trackApiCall(ws.token);
+  const sep=path.includes('?')?'&':'?';
+  const r=await fetch('https://graph.facebook.com/v21.0/'+path+sep+'access_token='+ws.token);
+  return r.json();
+}
+
+// ═══ RECONCILIATION ═══════════════════════════════════════════════════════
+function saveMetaWs(wsId, acctId){
+  const ws=getWs(wsId);
+  if(!ws) return;
+  const dslRaw=document.getElementById('dsl-'+acctId)?.value||'';
+  ws.acctMeta[acctId]={
+    vendor:sanitize(document.getElementById('vendor-'+acctId)?.value||''),
+    buyer: sanitize(document.getElementById('buyer-'+acctId)?.value||''),
+    bm:    sanitize(document.getElementById('bm-'+acctId)?.value||''),
+    vertical:sanitize(document.getElementById('vertical-'+acctId)?.value||''),
+    dolphinProfile:sanitize(document.getElementById('profile-'+acctId)?.value||''),
+    proxy: sanitize(document.getElementById('proxy-'+acctId)?.value||''),
+    dsl:   dslRaw===''?'':sanitizeNum(dslRaw)
+  };
+  saveAllStorage();
+  if(typeof updateAllRows==='function') updateAllRows();
+}
+
+function saveBalanceWs(wsId, acctId, val){
+  const ws=getWs(wsId);
+  if(!ws) return;
+  ws.balances[acctId]=sanitizeNum(val);
+  saveAllStorage();
+}
+
+
+function buildAssetSelect(id, options, current, wsId, acctId){
+  let html='<select class="cel" id="'+id+'" onchange="saveMetaWs(\''+wsId+'\',\''+acctId+'\')">';
+  html+='<option value="">— None —</option>';
+  options.forEach(opt=>{
+    const sel=current===opt?' selected':'';
+    html+='<option value="'+sanitize(opt)+'"'+sel+'>'+sanitize(opt)+'</option>';
+  });
+  // If current value not in options, show it as a custom option (legacy data)
+  if(current&&!options.includes(current)){
+    html+='<option value="'+sanitize(current)+'" selected>'+sanitize(current)+' (custom)</option>';
+  }
+  html+='</select>';
+  return html;
+}
+
+function buildReconRows(){
+  const ws=getActiveWs();
+  const tb=document.getElementById('recon-tb');
+  if(!tb||!ws||!ws.accounts.length){if(tb)tb.innerHTML='';return;}
+  tb.innerHTML='';
+  ws.accounts.forEach(a=>{
+    const m=ws.acctMeta[a.id]||{};
+    const bal=ws.balances[a.id]||'';
+    const tr=document.createElement('tr');
+    tr.id='rrow-'+a.id;
+    tr.innerHTML=
+      '<td><div style="display:flex;align-items:center;gap:6px"><div class="ws-tag" style="background:'+ws.color+'22;color:'+ws.color+';border:1px solid '+ws.color+'44">'+sanitize(ws.name)+'</div></div>'+
+      '<div class="aname">'+sanitize(a.name)+'</div><div class="aid">'+sanitize(a.id)+'</div></td>'+
+      '<td>'+buildAssetSelect('vendor-'+a.id,assets.vendors,m.vendor||'',ws.id,a.id)+'</td>'+
+      '<td>'+buildAssetSelect('buyer-'+a.id,assets.buyers,m.buyer||'',ws.id,a.id)+'</td>'+
+      '<td><input class="cel" id="bm-'+a.id+'" placeholder="BM" value="'+sanitize(m.bm||'')+'" onchange="saveMetaWs(\''+ws.id+'\',\''+a.id+'\')"/></td>'+
+      '<td>'+buildAssetSelect('vertical-'+a.id,assets.verticals,m.vertical||'',ws.id,a.id)+'</td>'+
+      '<td><input class="cel" id="profile-'+a.id+'" placeholder="A-PB-001" value="'+sanitize(m.dolphinProfile||'')+'" onchange="saveMetaWs(\''+ws.id+'\',\''+a.id+'\')" style="min-width:110px"/></td>'+
+      '<td><input class="cel mono" id="proxy-'+a.id+'" placeholder="192.168.0.1:8000" value="'+sanitize(m.proxy||'')+'" onchange="saveMetaWs(\''+ws.id+'\',\''+a.id+'\')" style="min-width:140px;font-size:12px"/></td>'+
+      '<td><input class="cel cel-bal" type="number" id="dsl-'+a.id+'" placeholder="500" step="any" value="'+(m.dsl||m.dsl===0?m.dsl:'')+'" onchange="saveMetaWs(\''+ws.id+'\',\''+a.id+'\')"/></td>'+
+      '<td><input class="cel cel-bal" type="number" id="bal-'+a.id+'" placeholder="0.00" step="any" value="'+bal+'" onchange="saveBalanceWs(\''+ws.id+'\',\''+a.id+'\',this.value)"/></td>'+
+      '<td class="mono" id="rsp-'+a.id+'">—</td>'+
+      '<td id="rdsl-'+a.id+'">—</td>'+
+      '<td class="mono" id="rrem-'+a.id+'" style="font-weight:600">—</td>'+
+      '<td id="rrw-'+a.id+'">—</td>'+
+      '<td id="rflag-'+a.id+'"><span class="pill p-info">Enter balance</span></td>';
+    tb.appendChild(tr);
+  });
+  console.log('UMBRA: built '+ws.accounts.length+' rows for '+ws.name);
+  populateFilters();
+  applyFilters();
+}
+
+async function getSpendWs(ws, id){
+  const t=today();
+  try{
+    const d=await apiFetchWs(ws,id+'/insights?fields=spend&time_range={"since":"'+t+'","until":"'+t+'"}');
+    if(d.error&&d.error.code===190){
+      ws.status='error';ws.errorMsg='Token expired';
+      sendWA(MSGS.tokenExpired(ws.name));
+      showBanner('critical','🔴','Token Expired','Workspace "'+ws.name+'" token is expired. Renew immediately.','OK');
+      return 0;
+    }
+    return d.data&&d.data.length?parseFloat(d.data[0].spend)||0:0;
+  }catch{return 0;}
+}
+
+function getAlertLayer(vb,sp){
+  if(vb<=0) return null;
+  const rem=vb-sp,pct=(rem/vb)*100;
+  if(sp>vb) return 5;
+  if(rem<=0) return 4;
+  if(pct<=5) return 3;
+  if(pct<=10) return 2;
+  if(pct<=20) return 1;
+  return 0;
+}
+
+function checkAndAlertWs(ws,a,vb,sp){
+  const layer=getAlertLayer(vb,sp);
+  if(layer===null||layer===0){ws.alertState[a.id]=null;return;}
+  const m=ws.acctMeta[a.id]||{};
+  const v=m.vendor||'—',b=m.buyer||'—';
+  const rem=vb-sp,pct=vb>0?Math.round((rem/vb)*100):0;
+  const cur=a.currency||'USD';
+  const sym=cur==='BRL'?'R$ ':cur==='EUR'?'€':cur==='GBP'?'£':'$';
+  const prev=ws.alertState[a.id],now=Date.now();
+  const lbl=['','20%','10%','5%','Zero','Negative'][layer];
+  let msg='';
+  if(layer===1) msg=MSGS.l1(ws.name,a.name,v,b,rem,pct,sym);
+  else if(layer===2) msg=MSGS.l2(ws.name,a.name,v,b,rem,pct,sym);
+  else if(layer===3) msg=MSGS.l3(ws.name,a.name,v,b,rem,pct,sym);
+  else if(layer===4) msg=MSGS.l4(ws.name,a.name,v,b,sym);
+  else if(layer===5) msg=MSGS.l5(ws.name,a.name,v,b,sp-vb,sym);
+  const isNew=!prev,isWorse=prev&&layer>prev.layer,is24h=prev&&prev.layer===layer&&now-prev.ts>=86400000;
+  if(isNew||isWorse||is24h){
+    if(is24h) msg=MSGS.repeat(ws.name,a.name,v,b,lbl);
+    sendWA(msg);
+    if(layer>=3) playAlert(layer);
+    addLog('['+ws.name+'] '+(isNew?'🚨 L'+layer:isWorse?'🔺 L'+layer:'⏰ 24h')+': '+a.name,'warn');
+    ws.alertState[a.id]={layer,ts:now};
+    saveAllStorage();
+  }
+}
+
+function checkDslAlertWs(ws,a,sp){
+  const m=ws.acctMeta[a.id]||{};
+  const dsl=parseFloat(m.dsl)||0;
+  if(dsl<=0) return;
+  if(!ws.dslAlertState) ws.dslAlertState={};
+  const usage=(sp/dsl)*100;
+  let tier=0;
+  if(usage>=100) tier=100;
+  else if(usage>=90) tier=90;
+  const prev=ws.dslAlertState[a.id]||{tier:0};
+  if(tier>prev.tier){
+    const v=m.vendor||'—',b=m.buyer||'—';
+    const cur=a.currency||'USD';
+    const sym=cur==='BRL'?'R$ ':cur==='EUR'?'€':cur==='GBP'?'£':'$';
+    const msg=tier===100?MSGS.dslCap(ws.name,a.name,v,b,sp,dsl,sym):MSGS.dsl90(ws.name,a.name,v,b,sp,dsl,sym);
+    sendWA(msg);
+    addLog('['+ws.name+'] DSL '+tier+'%: '+a.name,'warn');
+    ws.dslAlertState[a.id]={tier,ts:Date.now()};
+    saveAllStorage();
+  } else if(tier===0&&prev.tier>0){
+    // Reset when usage falls back (e.g., new day)
+    ws.dslAlertState[a.id]={tier:0,ts:Date.now()};
+  }
+}
+
+async function runCheckWs(ws){
+  if(ws.status!=='connected'||!ws.accounts.length) return {wsName:ws.name,flags:0,accounts:0};
+  const results=await Promise.all(ws.accounts.map(a=>getSpendWs(ws,a.id)));
+  ws.accounts.forEach((a,i)=>{ws.spends[a.id]=results[i];});
+  let flagCount=0;
+  ws.accounts.forEach(a=>{
+    const vb=ws.balances[a.id]||0;
+    const sp=ws.spends[a.id]||0;
+    const layer=getAlertLayer(vb,sp);
+    if(layer>0) flagCount++;
+    checkAndAlertWs(ws,a,vb,sp);
+    checkDslAlertWs(ws,a,sp);
+  });
+  return {wsName:ws.name,flags:flagCount,accounts:ws.accounts.length};
+}
+
+async function runCheck(){
+  const btn=document.getElementById('check-btn');
+  if(btn){btn.disabled=true;btn.innerHTML='<span class="loader"></span>Checking...';}
+  addLog('Running check on all workspaces...','info');
+  // Run all workspaces in parallel
+  const allResults=await Promise.all(workspaces.map(ws=>runCheckWs(ws)));
+  // Update active workspace display
+  updateAllRows();
+  if(btn){btn.disabled=false;btn.textContent='Run check now';}
+  document.getElementById('last-lbl').textContent='Last check: '+fmtTime();
+  autoSecs=300;
+  // Build summary for banner + telegram
+  const summary=allResults.map(r=>'• '+r.wsName+': '+r.accounts+' accounts, '+r.flags+' flags').join('\n');
+  const totalFlags=allResults.reduce((s,r)=>s+r.flags,0);
+  addLog('Check complete — '+workspaces.length+' workspaces, '+totalFlags+' total flags','ok');
+  // Show banner
+  showBanner('info','⏱️','5-Minute Check Complete',summary,'OK');
+  // Send Telegram summary only if flags
+  if(totalFlags>0) sendWA(MSGS.checkDone(summary));
+  generateReport();
+}
+
+function updateAllRows(){
+  const ws=getActiveWs();
+  if(!ws||!ws.accounts.length) return;
+  let totBal=0,totSpend=0,flagCount=0,totalRw=0,rwCount=0,dslCapCount=0;
+  ws.accounts.forEach(a=>{
+    const vb=ws.balances[a.id]||0;
+    const sp=ws.spends[a.id]||0;
+    const m=ws.acctMeta[a.id]||{};
+    const dsl=parseFloat(m.dsl)||0;
+    const rem=vb-sp,layer=getAlertLayer(vb,sp);
+    totBal+=vb;totSpend+=sp;
+    if(layer>0) flagCount++;
+    const remEl=document.getElementById('rrem-'+a.id);
+    const rwEl=document.getElementById('rrw-'+a.id);
+    const flEl=document.getElementById('rflag-'+a.id);
+    const rowEl=document.getElementById('rrow-'+a.id);
+    const dslEl=document.getElementById('rdsl-'+a.id);
+    if(dslEl){
+      if(dsl>0){
+        const usage=(sp/dsl)*100;
+        dslEl.innerHTML=dslPill(usage);
+        if(usage>=100) dslCapCount++;
+      } else {
+        dslEl.innerHTML='<span class="pill p-gray">—</span>';
+      }
+    }
+    if(!rowEl) return;
+    const spEl=document.getElementById('rsp-'+a.id);
+    if(spEl) spEl.textContent=fmt0(sp);
+    if(vb===0){
+      if(remEl) remEl.innerHTML='<span style="color:var(--t3)">—</span>';
+      if(rwEl) rwEl.textContent='—';
+      if(flEl) flEl.innerHTML='<span class="pill p-info">Enter balance</span>';
+      rowEl.className='';return;
+    }
+    if(remEl){
+      const rc=rem<0?'#FF4444':rem<vb*0.05?'var(--red)':rem<vb*0.1?'var(--amber)':rem<vb*0.2?'var(--gold)':'var(--green)';
+      remEl.innerHTML='<span style="color:'+rc+';font-family:monospace">'+fmt(rem)+'</span>';
+    }
+    const rw=sp>0?Math.floor(vb/sp):999;
+    if(rw<999){totalRw+=rw;rwCount++;}
+    const rwc=rw<3?'var(--red)':rw<7?'var(--amber)':'var(--green)';
+    const rwp=Math.min(100,Math.round((rw/14)*100));
+    if(rwEl) rwEl.innerHTML='<span style="color:'+rwc+';font-family:monospace;font-weight:700">'+(rw>99?'99+':rw)+'d</span><div class="wbar-w" style="margin-left:6px"><div class="wbar" style="width:'+rwp+'%;background:'+rwc+'"></div></div>';
+    if(flEl) flEl.innerHTML=layerPill(layer);
+    if(rowEl) rowEl.className=rowClass(layer);
+  });
+  document.getElementById('m-bal').textContent=totBal>0?fmt(totBal):'—';
+  document.getElementById('m-bal').className='mval '+(totBal>0?'gold':'');
+  document.getElementById('m-spend').textContent=fmt0(totSpend);
+  const mf=document.getElementById('m-flags');mf.textContent=flagCount;mf.className='mval '+(flagCount>0?'danger':'ok');
+  const avgRw=rwCount>0?Math.round(totalRw/rwCount):0;
+  const mr=document.getElementById('m-runway');mr.textContent=avgRw>0?avgRw+'d':'—';mr.className='mval '+(avgRw<3?'danger':avgRw<7?'warn':'ok');
+  document.getElementById('m-active').textContent=ws.accounts.filter(a=>a.account_status===1).length;
+  const dslEl=document.getElementById('m-dsl-cap');
+  if(dslEl){
+    dslEl.textContent=dslCapCount;
+    dslEl.className='mval '+(dslCapCount>0?'danger':'ok');
+  }
+}
+
+// ═══ HEALTH ═══════════════════════════════════════════════════════════════
+async function getCampaigns(ws,id){
+  try{const d=await apiFetchWs(ws,id+'/campaigns?fields=effective_status&effective_status=["ACTIVE"]&limit=100');return d.data?d.data.length:0;}catch{return 0;}
+}
+async function runHealthCheck(){
+  const ws=getActiveWs();
+  if(!ws||ws.status!=='connected') return;
+  const btn=document.getElementById('health-btn');
+  const grid=document.getElementById('hgrid');
+  if(btn){btn.disabled=true;btn.innerHTML='<span class="loader"></span>Checking...';}
+  grid.innerHTML='<div class="empty-s"><span class="loader"></span>Loading...</div>';
+  const cams=await Promise.all(ws.accounts.map(a=>getCampaigns(ws,a.id)));
+  grid.innerHTML='';
+  let issues=0,disabled=0;
+  ws.accounts.forEach((a,i)=>{
+    const isDisabled=a.account_status===2||a.account_status===101;
+    const isWarn=a.account_status===3||a.account_status===9||a.account_status===100;
+    const isOk=a.account_status===1;
+    if(!isOk) issues++;if(isDisabled) disabled++;
+    const m=ws.acctMeta[a.id]||{};
+    if(ws.prevStatus[a.id]&&ws.prevStatus[a.id]!==a.account_status&&!isOk){
+      sendWA(MSGS.change(ws.name,a.name,m.vendor,m.buyer,ws.prevStatus[a.id],a.account_status));
+      addLog('['+ws.name+'] STATUS: '+a.name+' → '+a.account_status,'err');
+    }
+    if(isDisabled&&ws.prevStatus[a.id]!==a.account_status) sendWA(MSGS.disabled(ws.name,a.name,m.vendor,m.buyer));
+    else if(isWarn&&ws.prevStatus[a.id]!==a.account_status) sendWA(MSGS.warn(ws.name,a.name,m.vendor,m.buyer));
+    ws.prevStatus[a.id]=a.account_status;
+    const cardCls=isDisabled?'hc-danger':isWarn?'hc-warn':'hc-ok';
+    const lifetime=a.amount_spent?fmt(parseFloat(a.amount_spent)/100):'$0';
+    const statusMap={1:'Active',2:'Disabled',3:'Unsettled',9:'In grace period',100:'Pending closure',101:'Closed'};
+    const statusColor=isOk?'c-ok':isDisabled?'c-danger':'c-warn';
+    let alertHtml='';
+    if(isDisabled) alertHtml='<div class="abanner ab-danger">Account disabled — request replacement + balance transfer immediately</div>';
+    else if(isWarn) alertHtml='<div class="abanner ab-warn">Billing or policy issue — pause spend if unresolved within 24h</div>';
+    const dslVal=parseFloat(m.dsl)||0;
+    const spToday=ws.spends[a.id]||0;
+    const dslRow=dslVal>0?`<div class="hc-row"><span class="hc-key">DSL</span><span class="hc-val">$${Math.round(dslVal).toLocaleString()} <span style="margin-left:4px">${dslPill((spToday/dslVal)*100)}</span></span></div>`:'';
+    const profileRow=m.dolphinProfile?`<div class="hc-row"><span class="hc-key">Profile</span><span class="hc-val">${sanitize(m.dolphinProfile)}</span></div>`:'';
+    const proxyRow=m.proxy?`<div class="hc-row"><span class="hc-key">Proxy</span><span class="hc-val" style="font-size:11px">${sanitize(m.proxy)}</span></div>`:'';
+    grid.innerHTML+=`<div class="hcard ${cardCls}">
+      <div class="hc-top">
+        <div>
+          <div style="margin-bottom:4px"><span class="ws-tag" style="background:${ws.color}22;color:${ws.color};border:1px solid ${ws.color}44">${sanitize(ws.name)}</span></div>
+          <div class="hc-name">${sanitize(a.name)}</div><div class="hc-id">${sanitize(a.id)}</div>
+        </div>${sPill(a.account_status)}
+      </div>
+      <div class="hc-rows">
+        <div class="hc-row"><span class="hc-key">Vendor</span><span class="hc-val">${sanitize(m.vendor||'—')}</span></div>
+        <div class="hc-row"><span class="hc-key">Buyer</span><span class="hc-val">${sanitize(m.buyer||'—')}</span></div>
+        <div class="hc-row"><span class="hc-key">BM</span><span class="hc-val">${sanitize(m.bm||'—')}</span></div>
+        <div class="hc-row"><span class="hc-key">Vertical</span><span class="hc-val">${sanitize(m.vertical||'—')}</span></div>
+        ${profileRow}
+        ${proxyRow}
+        ${dslRow}
+        <div class="hc-row"><span class="hc-key">Status</span><span class="hc-val ${statusColor}">${statusMap[a.account_status]||'Status '+a.account_status}</span></div>
+        <div class="hc-row"><span class="hc-key">Lifetime spend</span><span class="hc-val">${lifetime}</span></div>
+        <div class="hc-row"><span class="hc-key">Active campaigns</span><span class="hc-val ${cams[i]>0?'c-ok':'c-muted'}">${cams[i]}</span></div>
+      </div>${alertHtml}
+    </div>`;
+  });
+  const el=document.getElementById('tb-health');
+  el.textContent=issues>0?issues+' issues':'OK';
+  if(issues>0)el.classList.add('red');else el.classList.remove('red');
+  const active=ws.accounts.filter(a=>a.account_status===1).length;
+  document.getElementById('health-sum').innerHTML=`
+    <div class="met"><div class="mlbl">Active</div><div class="mval ok">${active}</div></div>
+    <div class="met"><div class="mlbl">Disabled</div><div class="mval ${disabled>0?'danger':''}">${disabled}</div></div>
+    <div class="met"><div class="mlbl">Issues</div><div class="mval ${issues>0?'warn':''}">${issues}</div></div>
+    <div class="met"><div class="mlbl">Total</div><div class="mval">${ws.accounts.length}</div></div>`;
+  if(btn){btn.disabled=false;btn.textContent='Refresh';}
+  saveAllStorage();
+}
+
+// ═══ WARMING ══════════════════════════════════════════════════════════════
+let warmingAccounts=[];
+function openWarmModal(){document.getElementById('warm-modal').classList.add('open');['w-id','w-vendor','w-buyer','w-vertical'].forEach(id=>document.getElementById(id).value='');}
+function closeWarmModal(){document.getElementById('warm-modal').classList.remove('open');}
+function saveWarm(){
+  const id=sanitize(document.getElementById('w-id').value.trim());
+  if(!id) return;
+  warmingAccounts.push({id,vendor:sanitize(document.getElementById('w-vendor').value),buyer:sanitize(document.getElementById('w-buyer').value),vertical:sanitize(document.getElementById('w-vertical').value),startDate:today()});
+  closeWarmModal();renderWarming();
+  addLog('Added '+id+' to warming','info');
+}
+function removeWarm(idx){warmingAccounts.splice(idx,1);renderWarming();}
+function renderWarming(){
+  const tb=document.getElementById('warm-tb'),empty=document.getElementById('warm-empty');
+  tb.innerHTML='';
+  document.getElementById('tb-warm').textContent=warmingAccounts.length||0;
+  if(!warmingAccounts.length){empty.style.display='block';return;}
+  empty.style.display='none';
+  warmingAccounts.forEach((w,idx)=>{
+    const start=new Date(w.startDate);
+    const day=Math.min(14,Math.max(1,Math.floor((Date.now()-start)/(864e5))+1));
+    const pct=Math.round((day/14)*100);
+    const phase=day>=8?'<span class="pill p-warn">Ramp</span>':day>=4?'<span class="pill p-info">BM setup</span>':'<span class="pill p-info">Behavior</span>';
+    const budget=day>=8?'$'+Math.round(5*Math.pow(1.3,day-7)):day>=4?'$5':'$0';
+    tb.innerHTML+=`<tr>
+      <td><div class="aname" style="font-size:12px">${sanitize(w.id)}</div></td>
+      <td>${sanitize(w.vendor||'—')}</td><td>${sanitize(w.buyer||'—')}</td>
+      <td><span class="mono c-gold" style="font-weight:700">Day ${day}/14</span></td>
+      <td><div class="wbar-w"><div class="wbar" style="width:${pct}%"></div></div><span style="font-size:10px;color:var(--t3);margin-left:6px">${pct}%</span></td>
+      <td>${phase}</td><td class="mono">${budget}/day</td>
+      <td>${sanitize(w.vertical||'—')}</td>
+      <td style="font-size:11px;color:var(--t3)">${addDays(w.startDate,14)}</td>
+      <td><button class="btn" style="font-size:11px;padding:4px 9px;color:var(--green)" onclick="removeWarm(${idx})">Done</button></td>
+    </tr>`;
+  });
+}
+
+// ═══ REPORT ═══════════════════════════════════════════════════════════════
+function generateReport(){
+  const ws=getActiveWs();
+  if(!ws) return;
+  const d=new Date();
+  const ds=d.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  let totBal=0,totSpend=0,flags=[],active=0,disabled=0,dslHigh=[],detailLines=[];
+  const accts=ws?ws.accounts:[];
+  accts.forEach(a=>{
+    const vb=ws.balances[a.id]||0;
+    const sp=ws.spends[a.id]||0;
+    const m=ws.acctMeta[a.id]||{};
+    totBal+=vb;totSpend+=sp;
+    if(a.account_status===1) active++;
+    if(a.account_status===2||a.account_status===101) disabled++;
+    const layer=getAlertLayer(vb,sp);
+    if(layer===5) flags.push('  🚨🚨 EMERGENCY — '+a.name+' | Vendor: '+(m.vendor||'—')+' | Buyer: '+(m.buyer||'—')+' | Overspent by $'+Math.round(sp-vb));
+    else if(layer===4) flags.push('  🚨 ZERO — '+a.name+' | Vendor: '+(m.vendor||'—'));
+    else if(layer===3) flags.push('  🔴 CRITICAL (5%) — '+a.name+' | '+fmt(vb-sp)+' left');
+    else if(layer===2) flags.push('  🔶 ALERT (10%) — '+a.name+' | '+fmt(vb-sp)+' left');
+    else if(layer===1) flags.push('  ⚠️  ATTENTION (20%) — '+a.name+' | '+fmt(vb-sp)+' left');
+    if(a.account_status===2) flags.push('  🔴 DISABLED — '+a.name+' | Vendor: '+(m.vendor||'—'));
+    const dslVal=parseFloat(m.dsl)||0;
+    if(dslVal>0){
+      const usage=(sp/dslVal)*100;
+      if(usage>=90){
+        const tag=usage>=100?'🛑 AT CAP':'🟠 NEAR CAP';
+        dslHigh.push('  '+tag+' — '+a.name+' | $'+Math.round(sp)+' / $'+Math.round(dslVal)+' ('+Math.round(usage)+'%) | Buyer: '+(m.buyer||'—'));
+      }
+    }
+    if(m.dolphinProfile||m.proxy){
+      detailLines.push('  '+a.name+' — '+(m.dolphinProfile?'Profile: '+m.dolphinProfile:'')+(m.dolphinProfile&&m.proxy?' | ':'')+(m.proxy?'Proxy: '+m.proxy:''));
+    }
+  });
+  const rw=totSpend>0?Math.round(totBal/totSpend):0;
+  const wsLine=ws?('Workspace:            '+ws.name+'\n'):'';
+  let rep='UMBRA OPS — DAILY REPORT\n'+ds+' | '+fmtTime()+'\n'+'─'.repeat(50)+'\n\n';
+  rep+='SUMMARY\n'+wsLine;
+  rep+='  Total vendor balance:  '+fmt(totBal)+'\n';
+  rep+='  Meta spend today:      '+fmt0(totSpend)+'\n';
+  rep+='  Balance runway:        '+(rw>0?rw+'d avg':'—')+'\n';
+  rep+='  Active accounts:       '+active+'\n';
+  rep+='  Disabled accounts:     '+disabled+'\n';
+  rep+='  Warming pipeline:      '+warmingAccounts.length+' account(s)\n\n';
+  if(flags.length) rep+='FLAGS ('+flags.length+' requiring attention)\n'+flags.join('\n')+'\n\n';
+  else rep+='STATUS\n  All accounts operating normally.\n\n';
+  if(dslHigh.length) rep+='DSL ATTENTION ('+dslHigh.length+' near or at cap)\n'+dslHigh.join('\n')+'\n\n';
+  if(detailLines.length) rep+='ASSET MAPPING\n'+detailLines.join('\n')+'\n\n';
+  if(warmingAccounts.length){
+    rep+='WARMING PIPELINE\n';
+    warmingAccounts.forEach(w=>{const day=Math.min(14,Math.max(1,Math.floor((Date.now()-new Date(w.startDate))/(864e5))+1));rep+='  '+w.id+' — Day '+day+'/14 | Vendor: '+(w.vendor||'—')+'\n';});
+    rep+='\n';
+  }
+  rep+='NEXT ACTIONS\n';
+  if(disabled>0) rep+='  1. Contact vendor for replacement on '+disabled+' disabled account(s)\n';
+  const crits=flags.filter(f=>f.includes('ZERO')||f.includes('EMERGENCY')||f.includes('CRITICAL'));
+  if(crits.length) rep+='  '+(disabled>0?2:1)+'. Immediate top-up on '+crits.length+' critical account(s)\n';
+  if(!flags.length&&!disabled) rep+='  1. Continue monitoring — no action required\n';
+  rep+='\n'+'─'.repeat(50)+'\nUMBRA';
+  document.getElementById('rbox').textContent=rep;
+}
+function copyReport(){
+  navigator.clipboard.writeText(document.getElementById('rbox').textContent).then(()=>{
+    const btn=event.target;const orig=btn.textContent;
+    btn.textContent='Copied!';setTimeout(()=>btn.textContent=orig,2000);
+  });
+}
+
+function renderAccountsList(){
+  const ws=getActiveWs();
+  const tb=document.getElementById('acct-tb');tb.innerHTML='';
+  if(!ws) return;
+  ws.accounts.forEach(a=>{
+    const m=ws.acctMeta[a.id]||{};
+    const sp=a.amount_spent?fmt(parseFloat(a.amount_spent)/100):'$0';
+    tb.innerHTML+=`<tr><td><div class="aname">${sanitize(a.name)}</div><div class="aid">${sanitize(a.id)}</div>${m.dolphinProfile?'<div class="aid" style="color:var(--gold)">'+sanitize(m.dolphinProfile)+'</div>':''}</td><td>${sanitize(m.vendor||'—')}</td><td>${sanitize(m.buyer||'—')}</td><td>${sanitize(m.bm||'—')}</td><td>${sanitize(m.vertical||'—')}</td><td class="mono">${sp}</td><td>${sPill(a.account_status)}</td></tr>`;
+  });
+}
+
+// ═══ AUTO REFRESH ══════════════════════════════════════════════════════════
+function clearAllTimers(){if(autoTimer)clearInterval(autoTimer);}
+function calcSafeInterval(){
+  // Each check = 1 API call per account (insights) + 1 for adaccounts
+  // Meta limit ~180 calls/hr per token. Keep under 80% = 144 calls/hr.
+  // interval_secs = total_accounts_per_token * 3600 / 144
+  const maxCallsPerHr=144;
+  let maxAccounts=0;
+  workspaces.forEach(ws=>{if(ws.status==='connected') maxAccounts=Math.max(maxAccounts,ws.accounts.length);});
+  if(maxAccounts===0) return 300;
+  const safe=Math.ceil(maxAccounts*3600/maxCallsPerHr);
+  return Math.max(300,safe); // minimum 5min
+}
+function startAutoRefresh(){
+  clearAllTimers();
+  autoSecs=calcSafeInterval();
+  autoTimer=setInterval(()=>{
+    autoSecs--;
+    const m=Math.floor(autoSecs/60),s=autoSecs%60;
+    const el=document.getElementById('m-cd');
+    if(el) el.textContent=m+'m'+String(s).padStart(2,'0')+'s';
+    if(autoSecs<=0){autoSecs=calcSafeInterval();runCheck();workspaces.forEach(ws=>{if(ws.status==='connected')runHealthCheckWs(ws);});}
+  },1000);
+}
+async function runHealthCheckWs(ws){
+  // Lightweight health check for non-active workspaces during auto-refresh
+  if(!ws||ws.status!=='connected'||!ws.accounts.length) return;
+  try{
+    const d=await apiFetchWs(ws,'me/adaccounts?fields=id,account_status&limit=25');
+    if(d.error&&d.error.code===190){
+      ws.status='error';ws.errorMsg='Token expired';
+      sendWA(MSGS.tokenExpired(ws.name));
+      renderWsDropdown();
+      return;
+    }
+    if(d.data) d.data.forEach(a=>{
+      const prev=ws.prevStatus[a.id];
+      if(prev&&prev!==a.account_status&&a.account_status!==1){
+        const m=ws.acctMeta[a.id]||{};
+        sendWA(MSGS.change(ws.name,a.name,m.vendor,m.buyer,prev,a.account_status));
+        addLog('['+ws.name+'] STATUS: '+a.id+' → '+a.account_status,'err');
+      }
+      ws.prevStatus[a.id]=a.account_status;
+    });
+  }catch(e){}
+}
+function switchTab(name){
+  const names=['recon','health','warming','bans','assets','workspaces','settings','report','log'];
+  document.querySelectorAll('.tab').forEach((tab,i)=>tab.classList.toggle('on',names[i]===name));
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
+  const pane=document.getElementById('pane-'+name);
+  if(pane) pane.classList.add('on');
+  if(name==='assets'){renderAssetsView();renderVendorScorecard();}
+  if(name==='workspaces') renderWorkspacesView();
+  if(name==='settings') renderTgConfigView();
+  if(name==='bans') renderBansView();
+}
+
+
+
+
+
+// ═══ TELEGRAM SETTINGS UI ════════════════════════════════════════════════
+function saveTgToken(){
+  const v=document.getElementById('tg-token-inp').value.trim();
+  tgConfig.token=v;
+  saveTgConfig();
+  renderTgConfigView();
+  addLog('Telegram token '+(v?'saved':'cleared'),'ok');
+}
+function clearTgToken(){
+  tgConfig.token='';
+  document.getElementById('tg-token-inp').value='';
+  saveTgConfig();
+  renderTgConfigView();
+  addLog('Telegram token cleared — legacy fallback active','info');
+}
+function openTgChatModal(){
+  document.getElementById('tg-chat-name').value='';
+  document.getElementById('tg-chat-id').value='';
+  document.getElementById('tg-chat-err').style.display='none';
+  document.getElementById('tg-chat-modal').classList.add('open');
+}
+function closeTgChatModal(){document.getElementById('tg-chat-modal').classList.remove('open');}
+function saveTgChat(){
+  const name=sanitize(document.getElementById('tg-chat-name').value.trim());
+  const chatId=document.getElementById('tg-chat-id').value.trim();
+  const err=document.getElementById('tg-chat-err');
+  if(!name||!chatId){err.textContent='Both fields are required.';err.style.display='block';return;}
+  if(!/^-?\d+$/.test(chatId)){err.textContent='Chat ID must be numeric (e.g. 5245753077 or -1001234567890).';err.style.display='block';return;}
+  tgConfig.chats.push({id:'tgc_'+Date.now(),name,chatId,enabled:true});
+  saveTgConfig();
+  closeTgChatModal();
+  renderTgConfigView();
+  addLog('Telegram chat added: '+name,'ok');
+}
+function removeTgChat(id){
+  tgConfig.chats=tgConfig.chats.filter(c=>c.id!==id);
+  saveTgConfig();
+  renderTgConfigView();
+}
+function toggleTgChat(id){
+  const c=tgConfig.chats.find(x=>x.id===id);
+  if(!c) return;
+  c.enabled=!c.enabled;
+  saveTgConfig();
+  renderTgConfigView();
+}
+async function testTgChat(id){
+  const c=tgConfig.chats.find(x=>x.id===id);
+  if(!c) return;
+  const token=tgConfig.token||TG_LEGACY.token;
+  if(!token){addLog('Telegram: no bot token configured','err');return;}
+  try{
+    const r=await fetch('https://api.telegram.org/bot'+token+'/sendMessage',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({chat_id:c.chatId,text:'*UMBRA — Test message*\nIf you see this, your Telegram chat is configured correctly.',parse_mode:'Markdown'})
+    });
+    const d=await r.json();
+    if(d.ok) addLog('Test sent to '+c.name,'ok');
+    else addLog('Test failed ('+c.name+'): '+d.description,'err');
+  }catch(e){addLog('Test failed ('+c.name+'): '+e.message,'err');}
+}
+function renderTgConfigView(){
+  const tokenInp=document.getElementById('tg-token-inp');
+  const status=document.getElementById('tg-token-status');
+  if(tokenInp&&!tokenInp.value) tokenInp.value=tgConfig.token||'';
+  if(status){
+    if(tgConfig.token) status.textContent='Custom bot token saved. Used for all alerts.';
+    else status.textContent='No token configured — falling back to legacy token until you save one.';
+  }
+  const list=document.getElementById('tg-chats-list');
+  if(!list) return;
+  if(tgConfig.chats.length===0){
+    list.innerHTML='<div class="empty-s" style="padding:24px">No chats configured. Click + Add chat to start.</div>';
+    return;
+  }
+  list.innerHTML='';
+  tgConfig.chats.forEach(c=>{
+    const div=document.createElement('div');
+    div.className='ws-item';
+    div.style.marginBottom='8px';
+    const safeName=sanitize(c.name);
+    const safeId=sanitize(c.chatId);
+    div.innerHTML='<div><div class="ws-item-name">'+safeName+(c.enabled?'':' <span class="pill p-gray" style="margin-left:6px">disabled</span>')+'</div><div class="ws-item-sub mono">'+safeId+'</div></div>'+
+      '<div class="brow">'+
+        '<button class="btn" style="font-size:11px;padding:4px 10px" onclick="testTgChat(\''+c.id+'\')">Test</button>'+
+        '<button class="btn" style="font-size:11px;padding:4px 10px" onclick="toggleTgChat(\''+c.id+'\')">'+(c.enabled?'Disable':'Enable')+'</button>'+
+        '<button class="btn" style="font-size:11px;padding:4px 10px;color:var(--red);border-color:var(--rd4)" onclick="removeTgChat(\''+c.id+'\')">Remove</button>'+
+      '</div>';
+    list.appendChild(div);
+  });
+}
+
+// ═══ ASSETS (vendors / buyers / verticals) ═══════════════════════════════
+let assets={vendors:[],buyers:[],verticals:[]};
+
+function loadAssets(){
+  try{
+    const d=localStorage.getItem('umbra_assets');
+    if(d) assets=JSON.parse(d);
+    if(!assets.vendors) assets.vendors=[];
+    if(!assets.buyers) assets.buyers=[];
+    if(!assets.verticals) assets.verticals=[];
+  }catch(e){assets={vendors:[],buyers:[],verticals:[]};}
+}
+function saveAssets(){try{localStorage.setItem('umbra_assets',JSON.stringify(assets));}catch(e){}}
+
+function addAsset(type){
+  const inputId={vendors:'new-vendor',buyers:'new-buyer',verticals:'new-vertical'}[type];
+  const el=document.getElementById(inputId);
+  if(!el) return;
+  const val=sanitize(el.value.trim());
+  if(!val) return;
+  if(assets[type].includes(val)){
+    addLog(type.slice(0,-1)+' already exists: '+val,'warn');
+    return;
+  }
+  assets[type].push(val);
+  assets[type].sort();
+  saveAssets();
+  renderAssetsView();
+  el.value='';
+  // Rebuild recon rows so dropdowns include the new value
+  buildReconRows();
+  if(type==='vendors') renderVendorScorecard();
+  addLog('Added '+type.slice(0,-1)+': '+val,'ok');
+}
+
+function removeAsset(type, val){
+  assets[type]=assets[type].filter(v=>v!==val);
+  saveAssets();
+  renderAssetsView();
+  buildReconRows();
+  if(type==='vendors') renderVendorScorecard();
+  addLog('Removed '+type.slice(0,-1)+': '+val,'info');
+}
+
+function renderAssetsView(){
+  ['vendors','buyers','verticals'].forEach(type=>{
+    const listId={vendors:'vendor-list',buyers:'buyer-list',verticals:'vertical-list'}[type];
+    const countId={vendors:'vendor-count',buyers:'buyer-count',verticals:'vertical-count'}[type];
+    const list=document.getElementById(listId);
+    const count=document.getElementById(countId);
+    if(!list) return;
+    count.textContent=assets[type].length;
+    if(assets[type].length===0){
+      list.innerHTML='<div class="asset-empty">None added yet</div>';
+      return;
+    }
+    list.innerHTML='';
+    assets[type].forEach(v=>{
+      const div=document.createElement('div');
+      div.className='asset-item';
+      div.innerHTML='<span class="asset-item-name">'+sanitize(v)+'</span><button class="asset-item-del" onclick="removeAsset(\''+type+'\',\''+sanitize(v).replace(/\'/g,'')+'\')">✕</button>';
+      list.appendChild(div);
+    });
+  });
+}
+
+// ═══ WORKSPACES VIEW ═════════════════════════════════════════════════════
+function renderWorkspacesView(){
+  const grid=document.getElementById('ws-grid');
+  if(!grid) return;
+  document.getElementById('tb-ws').textContent=workspaces.length;
+  if(workspaces.length===0){
+    grid.innerHTML='<div class="empty-s" style="grid-column:1/-1">No workspaces yet. Click "+ Add workspace" to start.</div>';
+    return;
+  }
+  grid.innerHTML='';
+  workspaces.forEach(w=>{
+    const card=document.createElement('div');
+    card.className='ws-card '+(w.status==='connected'?'ws-connected':w.status==='error'?'ws-error':'');
+    const statusLabel=w.status==='connected'?'<span class="pill p-ok">Connected</span>':
+                      w.status==='error'?'<span class="pill p-danger">Error</span>':
+                      w.status==='connecting'?'<span class="pill p-warn">Connecting...</span>':
+                      '<span class="pill p-gray">Disconnected</span>';
+    const accountsLine=w.status==='connected'?w.accounts.length+' accounts':
+                        w.status==='error'?'Error: '+sanitize(w.errorMsg||'unknown'):
+                        'Not connected';
+    card.innerHTML=`
+      <div class="ws-card-color-bar" style="background:${w.color}"></div>
+      <div class="ws-card-hdr">
+        <div>
+          <div class="ws-card-name">${sanitize(w.name)}</div>
+          <div class="ws-card-stats">${accountsLine}</div>
+        </div>
+        ${statusLabel}
+      </div>
+      <div class="ws-card-actions">
+        ${w.status==='connected'?'<button class="btn" onclick="switchWorkspace(\''+w.id+'\');switchTab(\'recon\')">View</button>':''}
+        <button class="btn gold" onclick="openReplaceToken('${w.id}')">Replace token</button>
+        <button class="btn" onclick="connectWorkspace('${w.id}')">Reconnect</button>
+        <button class="btn" style="border-color:var(--rd4);color:var(--red)" onclick="confirmDeleteWs('${w.id}')">Delete</button>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function confirmDeleteWs(id){
+  const ws=getWs(id); if(!ws) return;
+  showBanner('critical','⚠️','Delete workspace?','This will remove "'+ws.name+'" permanently. Saved data (vendor balances, account tags) will be lost.','Delete',()=>{
+    deleteWorkspace(id);
+    renderWorkspacesView();
+  });
+}
+
+function openReplaceToken(id){
+  const ws=getWs(id); if(!ws) return;
+  document.getElementById('replace-ws-id').value=id;
+  document.getElementById('replace-ws-token').value='';
+  document.getElementById('replace-ws-name').textContent=ws.name;
+  document.getElementById('replace-ws-err').style.display='none';
+  document.getElementById('replace-ws-modal').classList.add('open');
+}
+function closeReplaceToken(){document.getElementById('replace-ws-modal').classList.remove('open');}
+
+async function saveReplacedToken(){
+  const id=document.getElementById('replace-ws-id').value;
+  const newToken=document.getElementById('replace-ws-token').value.trim();
+  const errEl=document.getElementById('replace-ws-err');
+  if(!newToken){errEl.textContent='Please enter a token.';errEl.style.display='block';return;}
+  const ws=getWs(id); if(!ws) return;
+  const btn=document.getElementById('replace-token-btn');
+  btn.disabled=true;btn.innerHTML='<span class="loader"></span>Testing...';
+  try{
+    const r=await fetch('https://graph.facebook.com/v21.0/me/adaccounts?fields=id,name&limit=1&access_token='+newToken);
+    const d=await r.json();
+    if(d.error){errEl.textContent='Invalid token: '+d.error.message;errEl.style.display='block';btn.disabled=false;btn.textContent='Replace';return;}
+    ws.token=newToken;
+    ws.status='disconnected';
+    saveAllStorage();
+    closeReplaceToken();
+    addLog('Token replaced for "'+ws.name+'"','ok');
+    connectWorkspace(id);
+    renderWorkspacesView();
+  }catch(e){errEl.textContent='Connection failed: '+e.message;errEl.style.display='block';}
+  btn.disabled=false;btn.textContent='Replace';
+}
+
+// ═══ FILTERS ═══════════════════════════════════════════════════════════════
+function populateFilters(){
+  const wsSelect=document.getElementById('filter-workspace');
+  const vertSelect=document.getElementById('filter-vertical');
+  const buyerSelect=document.getElementById('filter-buyer');
+  if(!wsSelect) return;
+
+  // Save current values
+  const curWs=wsSelect.value, curVert=vertSelect.value, curBuyer=buyerSelect.value;
+
+  // Rebuild workspace options
+  wsSelect.innerHTML='<option value="">All workspaces</option>';
+  workspaces.filter(w=>w.status==='connected').forEach(w=>{
+    const opt=document.createElement('option');
+    opt.value=w.id; opt.textContent=w.name;
+    wsSelect.appendChild(opt);
+  });
+
+  // Collect all verticals and buyers across all connected workspaces
+  const verticals=new Set(), buyers=new Set();
+  workspaces.forEach(w=>{
+    Object.values(w.acctMeta||{}).forEach(m=>{
+      if(m.vertical) verticals.add(m.vertical);
+      if(m.buyer) buyers.add(m.buyer);
+    });
+  });
+
+  vertSelect.innerHTML='<option value="">All verticals</option>';
+  [...verticals].sort().forEach(v=>{
+    const opt=document.createElement('option');
+    opt.value=v; opt.textContent=v;
+    vertSelect.appendChild(opt);
+  });
+
+  buyerSelect.innerHTML='<option value="">All buyers</option>';
+  [...buyers].sort().forEach(b=>{
+    const opt=document.createElement('option');
+    opt.value=b; opt.textContent=b;
+    buyerSelect.appendChild(opt);
+  });
+
+  // Restore values
+  wsSelect.value=curWs;
+  vertSelect.value=curVert;
+  buyerSelect.value=curBuyer;
+}
+
+function applyFilters(){
+  const search=(document.getElementById('filter-search')?.value||'').toLowerCase();
+  const wsFilter=document.getElementById('filter-workspace')?.value||'';
+  const vertFilter=document.getElementById('filter-vertical')?.value||'';
+  const buyerFilter=document.getElementById('filter-buyer')?.value||'';
+  const layerFilter=document.getElementById('filter-layer')?.value||'';
+
+  const rows=document.querySelectorAll('#recon-tb tr');
+  let visible=0, total=rows.length;
+
+  rows.forEach(row=>{
+    if(row.classList.contains('ws-row-divider')){return;}
+    const rowId=row.id?.replace('rrow-','');
+    if(!rowId){row.classList.remove('filtered-out');return;}
+
+    // Find which workspace this account belongs to
+    let rowWs=null;
+    workspaces.forEach(w=>{
+      if(w.accounts.find(a=>a.id===rowId)) rowWs=w;
+    });
+    const meta=rowWs?.acctMeta?.[rowId]||{};
+
+    // Text from cells
+    const nameCell=row.querySelector('.aname')?.textContent||'';
+    const vendorEl=document.getElementById('vendor-'+rowId);
+    const vendor=(vendorEl?.value||meta.vendor||'').toLowerCase();
+    const buyer=(meta.buyer||'').toLowerCase();
+    const vertical=(meta.vertical||'').toLowerCase();
+    const flagEl=row.querySelector('.pill');
+    const flagText=flagEl?.textContent||'';
+
+    // Determine layer from pill class
+    let rowLayer='';
+    if(flagEl){
+      if(flagEl.classList.contains('p-l5')) rowLayer='5';
+      else if(flagEl.classList.contains('p-l4')) rowLayer='4';
+      else if(flagEl.classList.contains('p-l3')) rowLayer='3';
+      else if(flagEl.classList.contains('p-l2')) rowLayer='2';
+      else if(flagEl.classList.contains('p-l1')) rowLayer='1';
+      else if(flagEl.classList.contains('p-info')) rowLayer='0';
+    }
+
+    const matchSearch=!search||
+      nameCell.toLowerCase().includes(search)||
+      vendor.includes(search)||
+      buyer.includes(search)||
+      (meta.bm||'').toLowerCase().includes(search)||
+      vertical.includes(search)||
+      rowId.toLowerCase().includes(search);
+
+    const matchWs=!wsFilter||(rowWs?.id===wsFilter);
+    const matchVert=!vertFilter||vertical===vertFilter.toLowerCase();
+    const matchBuyer=!buyerFilter||buyer===buyerFilter.toLowerCase();
+    const matchLayer=!layerFilter||rowLayer===layerFilter;
+
+    const show=matchSearch&&matchWs&&matchVert&&matchBuyer&&matchLayer;
+    row.classList.toggle('filtered-out',!show);
+    if(show) visible++;
+  });
+
+  const countEl=document.getElementById('filter-count');
+  if(countEl){
+    const hasFilter=search||wsFilter||vertFilter||buyerFilter||layerFilter;
+    countEl.textContent=hasFilter?visible+' of '+total+' accounts':'';
+  }
+}
+
+function clearFilters(){
+  ['filter-search','filter-workspace','filter-vertical','filter-buyer','filter-layer'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.value='';
+  });
+  document.querySelectorAll('#recon-tb tr').forEach(r=>r.classList.remove('filtered-out'));
+  const countEl=document.getElementById('filter-count');
+  if(countEl) countEl.textContent='';
+}
+
+// ═══ PDF EXPORT ════════════════════════════════════════════════════════════
+function exportPDF(){
+  generateReport();
+  const content = document.getElementById('rbox').textContent;
+  const ws = getActiveWs();
+  const wsName = ws ? ws.name : 'UMBRA';
+  const date = new Date().toISOString().slice(0,10);
+
+  // Build a printable page
+  const win = window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html><head>
+    <title>${wsName} — Daily Report ${date}</title>
+    <style>
+      body{font-family:monospace;font-size:13px;line-height:1.8;padding:40px;color:#111;background:#fff;white-space:pre-wrap;max-width:800px;margin:0 auto}
+      h1{font-family:sans-serif;font-size:18px;color:#333;margin-bottom:8px;letter-spacing:2px}
+      .sub{font-family:sans-serif;font-size:12px;color:#666;margin-bottom:32px}
+      .report{border:1px solid #ddd;border-radius:6px;padding:24px;background:#fafafa}
+      @media print{body{padding:20px}.report{border:none}}
+    
+/* ═══ FILTER BAR ══════════════════════════════════════════════════════════ */
+.filter-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px;padding:12px 16px;background:var(--bg3);border:1px solid var(--b1);border-radius:10px}
+.filter-bar input,.filter-bar select{background:var(--bg2);border:1px solid var(--b2);border-radius:6px;padding:6px 12px;color:var(--t1);font-size:13px;outline:none;transition:all .15s}
+.filter-bar input{flex:1;min-width:140px}
+.filter-bar input:focus,.filter-bar select:focus{border-color:var(--gd5);box-shadow:0 0 0 2px var(--gd3)}
+.filter-bar select{cursor:pointer}
+.filter-count{font-size:12px;color:var(--t3);margin-left:auto;white-space:nowrap}
+.filter-clear{background:transparent;border:1px solid var(--b2);color:var(--t3);padding:5px 10px;border-radius:6px;font-size:12px;cursor:pointer;transition:all .15s}
+.filter-clear:hover{border-color:var(--rd4);color:var(--red)}
+tr.filtered-out{display:none}
+
+
+/* ═══ ASSETS PANE ═════════════════════════════════════════════════════════ */
+.assets-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:8px}
+@media(max-width:900px){.assets-grid{grid-template-columns:1fr}}
+.asset-col{background:var(--bg3);border:1px solid var(--b1);border-radius:10px;padding:18px}
+.asset-col-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.asset-col-hdr h4{font-size:13px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:0}
+.asset-count{background:var(--gd3);color:var(--gold);border:1px solid var(--gd4);font-size:11px;font-weight:700;padding:2px 10px;border-radius:20px}
+.asset-add{display:flex;gap:6px;margin-bottom:14px}
+.asset-add input{flex:1;background:var(--bg2);border:1px solid var(--b2);border-radius:6px;padding:8px 12px;color:var(--t1);font-size:13px;outline:none;transition:all .15s}
+.asset-add input:focus{border-color:var(--gd5);box-shadow:0 0 0 2px var(--gd3)}
+.asset-list{display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto}
+.asset-item{display:flex;align-items:center;justify-content:space-between;background:var(--bg2);border:1px solid var(--b1);border-radius:6px;padding:8px 12px;font-size:13px;color:var(--t1);transition:all .15s}
+.asset-item:hover{border-color:var(--b2);background:var(--bg4)}
+.asset-item-name{font-weight:500}
+.asset-item-del{background:transparent;border:none;color:var(--t3);cursor:pointer;font-size:14px;padding:0 4px;transition:color .15s}
+.asset-item-del:hover{color:var(--red)}
+.asset-empty{text-align:center;padding:24px 12px;color:var(--t3);font-size:12px}
+
+/* ═══ WORKSPACES PANE ════════════════════════════════════════════════════ */
+.ws-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.ws-card{background:var(--bg3);border:1px solid var(--b1);border-radius:12px;padding:18px;transition:all .2s}
+.ws-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+.ws-card.ws-error{border-color:var(--rd4);background:var(--rd2)}
+.ws-card.ws-connected{border-left:3px solid var(--green)}
+.ws-card-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+.ws-card-name{font-size:15px;font-weight:700;color:var(--t1);margin-bottom:3px}
+.ws-card-stats{font-size:11px;color:var(--t3)}
+.ws-card-actions{display:flex;gap:6px;flex-wrap:wrap}
+.ws-card-actions .btn{padding:5px 10px;font-size:11px}
+.ws-card-color-bar{height:3px;border-radius:2px;margin-bottom:14px}
+
+</style>
+  </head><body>
+    <h1>UMBRA OPS</h1>
+    <div class="sub">${wsName} · ${date} · Generated by UMBRA</div>
+    <div class="report">${content.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+    <scr'+'ipt>window.onload=()=>{window.print();}</scr'+'ipt>
+  </body></html>`);
+  win.document.close();
+}
+
+
+// ═══ BAN TRACKER ══════════════════════════════════════════════════════════
+let bans=[];
+
+function loadBans(){
+  try{
+    const d=localStorage.getItem('umbra_bans');
+    bans=d?JSON.parse(d):[];
+    if(!Array.isArray(bans)) bans=[];
+  }catch(e){bans=[];}
+}
+function saveBans(){try{localStorage.setItem('umbra_bans',JSON.stringify(bans));}catch(e){}}
+
+function findAcctMetaById(acctId){
+  for(const ws of workspaces){
+    const a=(ws.accounts||[]).find(x=>x.id===acctId);
+    if(a){
+      const m=ws.acctMeta[acctId]||{};
+      return {ws,acct:a,meta:m};
+    }
+    if(ws.acctMeta&&ws.acctMeta[acctId]) return {ws,acct:null,meta:ws.acctMeta[acctId]};
+  }
+  return null;
+}
+
+function openBanModal(){
+  const t=new Date().toISOString().slice(0,10);
+  document.getElementById('ban-date').value=t;
+  ['ban-acct-id','ban-acct-name','ban-vendor','ban-buyer','ban-vertical','ban-bm','ban-profile','ban-proxy','ban-avg-spend','ban-days','ban-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('ban-cause').value='Unknown';
+  document.getElementById('ban-err').style.display='none';
+  const fillDl=(id,vals)=>{const dl=document.getElementById(id);if(!dl)return;dl.innerHTML='';(vals||[]).forEach(v=>{const o=document.createElement('option');o.value=v;dl.appendChild(o);});};
+  fillDl('ban-vendors-dl',assets.vendors);
+  fillDl('ban-buyers-dl',assets.buyers);
+  fillDl('ban-verticals-dl',assets.verticals);
+  document.getElementById('ban-modal').classList.add('open');
+}
+function closeBanModal(){document.getElementById('ban-modal').classList.remove('open');}
+
+function banAutoFill(){
+  const id=document.getElementById('ban-acct-id').value.trim();
+  if(!id) return;
+  const found=findAcctMetaById(id);
+  if(!found) return;
+  const {acct,meta}=found;
+  const setIfEmpty=(elId,val)=>{const el=document.getElementById(elId);if(el&&!el.value&&val) el.value=val;};
+  if(acct) setIfEmpty('ban-acct-name',acct.name);
+  setIfEmpty('ban-vendor',meta.vendor);
+  setIfEmpty('ban-buyer',meta.buyer);
+  setIfEmpty('ban-vertical',meta.vertical);
+  setIfEmpty('ban-bm',meta.bm);
+  setIfEmpty('ban-profile',meta.dolphinProfile);
+  setIfEmpty('ban-proxy',meta.proxy);
+}
+
+function saveBan(){
+  const date=document.getElementById('ban-date').value;
+  const acctId=sanitize(document.getElementById('ban-acct-id').value.trim());
+  const acctName=sanitize(document.getElementById('ban-acct-name').value.trim());
+  const err=document.getElementById('ban-err');
+  if(!date){err.textContent='Date is required.';err.style.display='block';return;}
+  if(!acctId&&!acctName){err.textContent='Account ID or name is required.';err.style.display='block';return;}
+  bans.push({
+    id:'ban_'+Date.now()+'_'+Math.floor(Math.random()*1000),
+    date,
+    accountId:acctId,
+    accountName:acctName,
+    vendor:sanitize(document.getElementById('ban-vendor').value),
+    buyer:sanitize(document.getElementById('ban-buyer').value),
+    vertical:sanitize(document.getElementById('ban-vertical').value),
+    bm:sanitize(document.getElementById('ban-bm').value),
+    dolphinProfile:sanitize(document.getElementById('ban-profile').value),
+    proxy:sanitize(document.getElementById('ban-proxy').value),
+    avgSpendAtBan:parseFloat(document.getElementById('ban-avg-spend').value)||0,
+    daysActive:parseInt(document.getElementById('ban-days').value,10)||0,
+    cause:document.getElementById('ban-cause').value||'Unknown',
+    notes:sanitize(document.getElementById('ban-notes').value)
+  });
+  saveBans();
+  closeBanModal();
+  renderBansView();
+  renderVendorScorecard();
+  addLog('Ban logged: '+(acctName||acctId),'info');
+}
+
+function removeBan(id){
+  if(!confirm('Remove this ban record?')) return;
+  bans=bans.filter(b=>b.id!==id);
+  saveBans();
+  renderBansView();
+  renderVendorScorecard();
+}
+
+function tally(list,field){
+  const m={};
+  list.forEach(b=>{const k=b[field]||'—';m[k]=(m[k]||0)+1;});
+  return Object.entries(m).sort((a,b)=>b[1]-a[1]);
+}
+
+function renderBansView(){
+  const tb=document.getElementById('bans-tb');
+  const empty=document.getElementById('bans-empty');
+  const tbBg=document.getElementById('tb-bans');
+  if(tbBg) tbBg.textContent=bans.length;
+  if(!tb) return;
+  const sorted=[...bans].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  tb.innerHTML='';
+  if(sorted.length===0){
+    if(empty) empty.style.display='block';
+  } else {
+    if(empty) empty.style.display='none';
+    sorted.forEach(b=>{
+      const tr=document.createElement('tr');
+      tr.innerHTML=`<td class="mono" style="font-size:12px">${sanitize(b.date)}</td>
+        <td><div class="aname">${sanitize(b.accountName||'—')}</div><div class="aid">${sanitize(b.accountId||'')}</div></td>
+        <td>${sanitize(b.vendor||'—')}</td>
+        <td>${sanitize(b.buyer||'—')}</td>
+        <td>${sanitize(b.vertical||'—')}</td>
+        <td>${sanitize(b.bm||'—')}</td>
+        <td class="mono">$${Math.round(b.avgSpendAtBan||0).toLocaleString()}</td>
+        <td class="mono">${b.daysActive||'—'}</td>
+        <td><span class="pill p-gray">${sanitize(b.cause||'Unknown')}</span></td>
+        <td style="font-size:12px;max-width:240px;color:var(--t3)">${sanitize(b.notes||'')}</td>
+        <td><button class="btn" style="font-size:11px;padding:4px 9px;color:var(--red);border-color:var(--rd4)" onclick="removeBan('${b.id}')">×</button></td>`;
+      tb.appendChild(tr);
+    });
+  }
+  renderBansAnalytics();
+}
+
+function renderBansAnalytics(){
+  const stats=document.getElementById('bans-stats');
+  const breakdown=document.getElementById('bans-breakdown');
+  const tl=document.getElementById('bans-timeline');
+  if(!stats||!breakdown||!tl) return;
+  const total=bans.length;
+  const totalDays=bans.reduce((s,b)=>s+(parseInt(b.daysActive,10)||0),0);
+  const totalSpend=bans.reduce((s,b)=>s+(parseFloat(b.avgSpendAtBan)||0),0);
+  const avgDays=total>0?(totalDays/total).toFixed(1):'—';
+  const avgSpend=total>0?Math.round(totalSpend/total):0;
+  const today0=new Date();today0.setHours(0,0,0,0);
+  const last30=bans.filter(b=>{
+    if(!b.date) return false;
+    const dt=new Date(b.date);
+    return (today0-dt)<30*86400000 && dt<=today0;
+  }).length;
+  stats.innerHTML=`
+    <div class="met"><div class="mlbl">Total bans</div><div class="mval ${total>0?'danger':''}">${total}</div></div>
+    <div class="met"><div class="mlbl">Last 30 days</div><div class="mval ${last30>0?'warn':''}">${last30}</div></div>
+    <div class="met"><div class="mlbl">Avg days active</div><div class="mval gold">${avgDays}</div></div>
+    <div class="met"><div class="mlbl">Avg spend at ban</div><div class="mval gold">$${avgSpend.toLocaleString()}</div></div>`;
+  const byVendor=tally(bans,'vendor');
+  const byBuyer=tally(bans,'buyer');
+  const byVertical=tally(bans,'vertical');
+  const vendorRows=byVendor.map(([k,n])=>{
+    const score=vendorScores[k]||{};
+    const supplied=parseInt(score.totalSupplied,10)||0;
+    const rate=supplied>0?((n/supplied)*100).toFixed(1)+'%':'—';
+    return `<div class="bans-row"><span>${sanitize(k||'—')}</span><span>${n}<span style="color:var(--t3);font-weight:400;margin-left:8px">${rate}</span></span></div>`;
+  }).join('')||'<div class="bans-row"><span>None</span><span>—</span></div>';
+  const buyerRows=byBuyer.map(([k,n])=>`<div class="bans-row"><span>${sanitize(k||'—')}</span><span>${n}</span></div>`).join('')||'<div class="bans-row"><span>None</span><span>—</span></div>';
+  const verticalRows=byVertical.map(([k,n])=>`<div class="bans-row"><span>${sanitize(k||'—')}</span><span>${n}</span></div>`).join('')||'<div class="bans-row"><span>None</span><span>—</span></div>';
+  breakdown.innerHTML=`
+    <div class="bans-block"><h5>By Vendor (count · ban rate)</h5>${vendorRows}</div>
+    <div class="bans-block"><h5>By Buyer</h5>${buyerRows}</div>
+    <div class="bans-block"><h5>By Vertical</h5>${verticalRows}</div>`;
+  const days=[];
+  for(let i=29;i>=0;i--){
+    const d=new Date(today0);d.setDate(d.getDate()-i);
+    days.push(d.toISOString().slice(0,10));
+  }
+  const counts=days.map(d=>bans.filter(b=>b.date===d).length);
+  const max=Math.max(1,...counts);
+  const bars=counts.map((c,i)=>{
+    const cls=c===0?'b-empty':c>=Math.max(2,max*0.8)?'b-hi':c>=Math.max(1,max*0.4)?'b-md':'';
+    const h=c===0?2:Math.max(4,Math.round((c/max)*60));
+    return `<div class="bans-tl-bar ${cls}" style="height:${h}px" title="${days[i]}: ${c} ban(s)"></div>`;
+  }).join('');
+  tl.innerHTML=`<h5>Last 30 days · ${counts.reduce((a,b)=>a+b,0)} ban(s)</h5>
+    <div class="bans-tl-bars">${bars}</div>
+    <div class="bans-tl-labels"><span>${days[0]}</span><span>${days[29]}</span></div>`;
+}
+
+function exportBansCSV(){
+  if(bans.length===0){addLog('No bans to export','warn');return;}
+  const headers=['Date','Account ID','Account Name','Vendor','Buyer','Vertical','BM','Profile','Proxy','Avg Spend at Ban','Days Active','Cause','Notes'];
+  const escape=v=>{const s=String(v==null?'':v).replace(/"/g,'""');return /[",\n]/.test(s)?'"'+s+'"':s;};
+  const rows=[headers.join(',')];
+  [...bans].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(b=>{
+    rows.push([b.date,b.accountId,b.accountName,b.vendor,b.buyer,b.vertical,b.bm,b.dolphinProfile,b.proxy,b.avgSpendAtBan,b.daysActive,b.cause,b.notes].map(escape).join(','));
+  });
+  const blob=new Blob([rows.join('\n')],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='umbra-bans-'+today()+'.csv';
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},100);
+  addLog('Exported '+bans.length+' bans to CSV','ok');
+}
+
+// ═══ VENDOR SCORECARD ═════════════════════════════════════════════════════
+let vendorScores={};
+
+function loadVendorScores(){
+  try{
+    const d=localStorage.getItem('umbra_vendor_scores');
+    vendorScores=d?JSON.parse(d):{};
+    if(!vendorScores||typeof vendorScores!=='object') vendorScores={};
+  }catch(e){vendorScores={};}
+}
+function saveVendorScores(){try{localStorage.setItem('umbra_vendor_scores',JSON.stringify(vendorScores));}catch(e){}}
+
+function vsSetByIdx(idx,field,el){
+  const v=(assets.vendors||[])[idx];
+  if(!v) return;
+  if(!vendorScores[v]) vendorScores[v]={};
+  vendorScores[v][field]=el.value;
+  saveVendorScores();
+  renderVendorScorecard();
+  renderBansAnalytics();
+}
+
+function computeVendorRating(score,banRate){
+  let pts=0;
+  if(banRate==='—') pts+=1;
+  else {
+    const r=parseFloat(banRate);
+    if(r<=10) pts+=2; else if(r<=25) pts+=1; else if(r<=50) pts+=0.5;
+  }
+  const rt=score.responseTime||'';
+  if(rt==='< 1h') pts+=2; else if(rt==='1–4h') pts+=1.5; else if(rt==='4–24h') pts+=1; else if(rt==='> 24h') pts+=0.25;
+  const cost=parseFloat(score.costPerAccount)||0;
+  if(cost>0&&cost<=20) pts+=1; else if(cost>0&&cost<=40) pts+=0.5; else if(cost===0) pts+=0.25;
+  return Math.max(1,Math.min(5,Math.round(pts)));
+}
+
+function renderVendorScorecard(){
+  const grid=document.getElementById('vs-grid');
+  const empty=document.getElementById('vs-empty');
+  if(!grid) return;
+  const vendors=assets.vendors||[];
+  if(vendors.length===0){
+    grid.innerHTML='';
+    if(empty) empty.style.display='block';
+    return;
+  }
+  if(empty) empty.style.display='none';
+  grid.innerHTML='';
+  vendors.forEach((v,idx)=>{
+    const score=vendorScores[v]||{};
+    let active=0;
+    workspaces.forEach(w=>{
+      (w.accounts||[]).forEach(a=>{
+        if(a.account_status===1){
+          const m=w.acctMeta[a.id]||{};
+          if(m.vendor===v) active++;
+        }
+      });
+    });
+    const myBans=bans.filter(b=>b.vendor===v);
+    const totalBans=myBans.length;
+    const supplied=parseInt(score.totalSupplied,10)||0;
+    const banRate=supplied>0?((totalBans/supplied)*100).toFixed(1)+'%':'—';
+    const avgDays=myBans.length>0?(myBans.reduce((s,b)=>s+(parseInt(b.daysActive,10)||0),0)/myBans.length).toFixed(1):'—';
+    const rating=computeVendorRating(score,banRate);
+    const stars='★'.repeat(rating)+'☆'.repeat(5-rating);
+    const banRateClass=banRate==='—'?'':parseFloat(banRate)>25?'danger':parseFloat(banRate)>10?'warn':'ok';
+    const compOpts=['Language Cloak Only','All Ad Types','White Only','Unknown'];
+    const rtOpts=['< 1h','1–4h','4–24h','> 24h','Unknown'];
+    const compHtml=compOpts.map(o=>`<option value="${o}" ${score.compliance===o?'selected':''}>${o}</option>`).join('');
+    const rtHtml=rtOpts.map(o=>`<option value="${o}" ${score.responseTime===o?'selected':''}>${o.replace('<','&lt;').replace('>','&gt;')}</option>`).join('');
+    const card=document.createElement('div');
+    card.className='vs-card';
+    card.innerHTML=`
+      <div class="vs-card-hdr">
+        <div class="vs-card-name">${sanitize(v)}</div>
+        <div class="vs-rating vs-rating-${rating}" title="Rating ${rating}/5">${stars}</div>
+      </div>
+      <div class="vs-stats">
+        <div class="vs-stat"><div class="vs-stat-lbl">Active accts</div><div class="vs-stat-val ${active>0?'ok':''}">${active}</div></div>
+        <div class="vs-stat"><div class="vs-stat-lbl">Total bans</div><div class="vs-stat-val ${totalBans>0?'danger':''}">${totalBans}</div></div>
+        <div class="vs-stat"><div class="vs-stat-lbl">Ban rate</div><div class="vs-stat-val ${banRateClass}">${banRate}</div></div>
+        <div class="vs-stat"><div class="vs-stat-lbl">Avg days</div><div class="vs-stat-val">${avgDays}</div></div>
+      </div>
+      <div class="vs-fields">
+        <div class="vs-field-row"><label>Total supplied</label><input type="number" placeholder="0" value="${score.totalSupplied||''}" onchange="vsSetByIdx(${idx},'totalSupplied',this)"/></div>
+        <div class="vs-field-row"><label>Compliance</label>
+          <select onchange="vsSetByIdx(${idx},'compliance',this)"><option value="">—</option>${compHtml}</select>
+        </div>
+        <div class="vs-field-row"><label>Response</label>
+          <select onchange="vsSetByIdx(${idx},'responseTime',this)"><option value="">—</option>${rtHtml}</select>
+        </div>
+        <div class="vs-field-row"><label>Cost / acct</label><input type="number" placeholder="USD" value="${score.costPerAccount||''}" onchange="vsSetByIdx(${idx},'costPerAccount',this)"/></div>
+        <div class="vs-field-row"><label>Notes</label><textarea rows="2" placeholder="Notes..." onchange="vsSetByIdx(${idx},'notes',this)">${sanitize(score.notes||'')}</textarea></div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+// ═══ SESSION PERSISTENCE ═══════════════════════════════════════════════════
+function checkPersistentSession(){
+  try{
+    const sess=localStorage.getItem('umbra_session');
+    if(!sess) return false;
+    const data=JSON.parse(sess);
+    if(!data.expires||Date.now()>=data.expires){
+      localStorage.removeItem('umbra_session');
+      return false;
+    }
+    // Valid session — auto-login
+    return true;
+  }catch(e){return false;}
+}
+
+function autoLoginIfValid(){
+  if(!localStorage.getItem('umbra_pw')) return; // No password set
+  if(checkPersistentSession()){
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app').style.display='block';
+    document.getElementById('tabs').style.display='flex';
+    loadAllStorage();
+    loadAssets();
+    loadTgConfig();
+    loadBans();
+    loadVendorScores();
+    addLog('Session restored','ok');
+    renderWorkspaceList();
+    renderWorkspacesView();
+    renderAssetsView();
+    if(workspaces.length>0){
+      switchWorkspace(workspaces[0].id);
+    } else {
+      // No workspaces — show workspaces tab so user can add one
+      switchTab('workspaces');
+    }
+  }
+}
+
+// ═══ INIT ══════════════════════════════════════════════════════════════════
+document.getElementById('rbox').textContent='Run a reconciliation check first.';
+document.getElementById('warm-empty').textContent='No accounts warming. Click + Add account to start.';
+document.getElementById('last-lbl').textContent='Not checked yet';
+const _stored=localStorage.getItem('umbra_pw');
+const _hint=document.getElementById('login-hint');
+if(_hint) _hint.textContent=_stored?'Password set.':'First time? Set a password.';
+addLog('UMBRA ready','ok');
+autoLoginIfValid();
+
 </script>
 </body>
 </html>

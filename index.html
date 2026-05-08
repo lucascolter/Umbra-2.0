@@ -151,8 +151,12 @@ tbody tr:hover td{background:var(--bg3)!important}
 .cel-bal{width:115px;font-family:monospace;font-size:13px}
 
 /* ═══ NAMES ═════════════════════════════════════════════════════════════ */
-.aname{font-weight:600;color:var(--t1);font-size:14px}
-.aid{font-size:11px;color:var(--t3);font-family:monospace;margin-top:2px}
+.aname{font-weight:600;color:var(--t1);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:260px}
+.aid{font-size:11px;color:var(--t3);font-family:monospace;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
+#recon-tb td:first-child{min-width:240px;max-width:300px}
+#recon-tb td{padding:14px 14px}
+#recon-tb th{font-size:10.5px}
+#recon-tb .cel{padding:8px 10px}
 
 /* ═══ LOG ═══════════════════════════════════════════════════════════════ */
 .log{background:var(--bg0);border:1px solid var(--b1);border-radius:9px;padding:14px;font-size:12px;font-family:monospace;max-height:260px;overflow-y:auto;line-height:1.7}
@@ -181,17 +185,18 @@ tbody tr:hover td{background:var(--bg3)!important}
 .wbar{height:100%;border-radius:20px;background:var(--gold);transition:width .5s}
 
 /* ═══ LAYER LEGEND ══════════════════════════════════════════════════════ */
-.layers{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:18px}
+.layers{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:18px}
+@media(max-width:1100px){.layers{grid-template-columns:repeat(4,1fr)}}
 @media(max-width:700px){.layers{grid-template-columns:repeat(2,1fr)}}
-.lcard{border-radius:8px;padding:11px 14px;transition:transform .2s;cursor:default}
+.lcard{border-radius:8px;padding:9px 11px;transition:transform .2s;cursor:default}
 .lcard:hover{transform:translateY(-1px)}
 .lc1{background:#1A2A1012;border:1px solid #7EC85A22}
 .lc2{background:var(--gd3);border:1px solid var(--gd4)}
 .lc3{background:var(--am3);border:1px solid var(--am4)}
 .lc4{background:var(--rd3);border:1px solid var(--rd4)}
 .lc5{background:var(--rd2);border:1px solid #FF444430;animation:blink 2s infinite}
-.lc-t{font-weight:700;font-size:13px;margin-bottom:3px}
-.lc-s{font-size:11px;opacity:.7}
+.lc-t{font-weight:700;font-size:12px;margin-bottom:2px}
+.lc-s{font-size:10px;opacity:.7}
 
 /* ═══ REPORT ════════════════════════════════════════════════════════════ */
 .rbox{background:var(--bg0);border:1px solid var(--b1);border-radius:9px;padding:20px;font-size:13px;font-family:monospace;line-height:2;color:var(--t2);white-space:pre-wrap;max-height:420px;overflow-y:auto}
@@ -425,6 +430,7 @@ tr.filtered-out{display:none}
     <div class="tab" onclick="switchTab('health')"><span id="tab-health">Account health</span> <span class="tbg" id="tb-health">—</span></div>
     <div class="tab" onclick="switchTab('warming')"><span id="tab-warming">Warming</span> <span class="tbg" id="tb-warm">0</span></div>
     <div class="tab" onclick="switchTab('bans')"><span id="tab-bans">Ban Tracker</span> <span class="tbg" id="tb-bans">0</span></div>
+    <div class="tab" onclick="switchTab('sot')"><span id="tab-sot">SOT</span> <span class="tbg" id="tb-sot">0</span></div>
     <div class="tab" onclick="switchTab('assets')"><span id="tab-assets">Assets</span></div>
     <div class="tab" onclick="switchTab('workspaces')"><span id="tab-workspaces">Workspaces</span> <span class="tbg" id="tb-ws">0</span></div>
     <div class="tab" onclick="switchTab('settings')"><span id="tab-settings">Settings</span></div>
@@ -436,6 +442,7 @@ tr.filtered-out{display:none}
 
     <!-- RECON -->
     <div id="pane-recon" class="pane on">
+      <div id="ws-err-banner" class="abanner ab-danger" style="display:none;margin-bottom:14px;cursor:pointer" onclick="switchTab('workspaces')"></div>
       <div class="metrics">
         <div class="met"><div class="mlbl">Vendor balances</div><div class="mval gold" id="m-bal">—</div></div>
         <div class="met"><div class="mlbl">Meta spend today</div><div class="mval" id="m-spend">—</div></div>
@@ -446,11 +453,13 @@ tr.filtered-out{display:none}
         <div class="met"><div class="mlbl">Next check</div><div class="mval gold" id="m-cd" style="font-size:18px">—</div></div>
       </div>
       <div class="layers">
-        <div class="lcard lc1"><div class="lc-t" style="color:#7EC85A">L1 — 20%</div><div class="lc-s" style="color:#7EC85A">Attention</div></div>
-        <div class="lcard lc2"><div class="lc-t" style="color:var(--gold)">L2 — 10%</div><div class="lc-s" style="color:var(--gold)">Alert</div></div>
-        <div class="lcard lc3"><div class="lc-t" style="color:var(--amber)">L3 — 5%</div><div class="lc-s" style="color:var(--amber)">Critical</div></div>
-        <div class="lcard lc4"><div class="lc-t" style="color:var(--red)">L4 — Zero</div><div class="lc-s" style="color:var(--red)">Paused</div></div>
-        <div class="lcard lc5"><div class="lc-t" style="color:#FF4444">L5 — Negative</div><div class="lc-s" style="color:#FF4444">Emergency</div></div>
+        <div class="lcard lc1"><div class="lc-t" style="color:#7EC85A">L1 — 50%</div><div class="lc-s" style="color:#7EC85A">Heads-up</div></div>
+        <div class="lcard lc1"><div class="lc-t" style="color:#7EC85A">L2 — 40%</div><div class="lc-s" style="color:#7EC85A">Attention</div></div>
+        <div class="lcard lc2"><div class="lc-t" style="color:var(--gold)">L3 — 30%</div><div class="lc-s" style="color:var(--gold)">Alert</div></div>
+        <div class="lcard lc2"><div class="lc-t" style="color:var(--gold)">L4 — 20%</div><div class="lc-s" style="color:var(--gold)">Alert</div></div>
+        <div class="lcard lc3"><div class="lc-t" style="color:var(--amber)">L5 — 10%</div><div class="lc-s" style="color:var(--amber)">Critical</div></div>
+        <div class="lcard lc4"><div class="lc-t" style="color:var(--red)">L6 — Zero</div><div class="lc-s" style="color:var(--red)">Paused</div></div>
+        <div class="lcard lc5"><div class="lc-t" style="color:#FF4444">L7 — Neg</div><div class="lc-s" style="color:#FF4444">Emergency</div></div>
       </div>
       <div class="card">
         <div class="card-hdr">
@@ -467,27 +476,26 @@ tr.filtered-out{display:none}
           <select id="filter-workspace" onchange="applyFilters()">
             <option value="">All workspaces</option>
           </select>
-          <select id="filter-vertical" onchange="applyFilters()">
-            <option value="">All verticals</option>
-          </select>
           <select id="filter-buyer" onchange="applyFilters()">
             <option value="">All buyers</option>
           </select>
           <select id="filter-layer" onchange="applyFilters()">
             <option value="">All alerts</option>
             <option value="0">No alert</option>
-            <option value="1">L1 — 20%</option>
-            <option value="2">L2 — 10%</option>
-            <option value="3">L3 — 5%</option>
-            <option value="4">L4 — Zero</option>
-            <option value="5">L5 — Emergency</option>
+            <option value="1">L1 — 50%</option>
+            <option value="2">L2 — 40%</option>
+            <option value="3">L3 — 30%</option>
+            <option value="4">L4 — 20%</option>
+            <option value="5">L5 — 10%</option>
+            <option value="6">L6 — Zero</option>
+            <option value="7">L7 — Negative</option>
           </select>
           <span class="filter-count" id="filter-count"></span>
           <button class="filter-clear" onclick="clearFilters()">Clear</button>
         </div>
         <div class="tw">
           <table>
-            <thead><tr><th>Account</th><th>Vendor</th><th>Buyer</th><th>BM</th><th>Vertical</th><th>Profile</th><th>Proxy</th><th>DSL ($)</th><th>Balance ($)</th><th>Spend today ($)</th><th>DSL usage</th><th>Remaining ($)</th><th>Runway</th><th>Alert</th></tr></thead>
+            <thead><tr><th>Account</th><th>Vendor</th><th>Buyer</th><th>BM</th><th>Profile</th><th>DSL ($)</th><th>Balance ($)</th><th>Spend today ($)</th><th>DSL usage</th><th>Remaining ($)</th><th>Runway</th><th>Alert</th></tr></thead>
             <tbody id="recon-tb"></tbody>
           </table>
         </div>
@@ -543,6 +551,46 @@ tr.filtered-out{display:none}
           </table>
         </div>
         <div id="bans-empty" class="empty-s" style="display:none">No bans logged yet. Click + Log ban to register your first one.</div>
+      </div>
+    </div>
+
+    <!-- SOT — SOURCE OF TRUTH -->
+    <div id="pane-sot" class="pane">
+      <div class="card">
+        <div class="card-hdr">
+          <div class="card-title">SOT — Source of Truth</div>
+          <span style="font-size:11px;color:var(--t3)" id="sot-count">—</span>
+        </div>
+        <p class="card-hint">Complete identity record per ad account: Facebook profile, BM, pixel, AdsPower profile + group, proxy, vendor, buyer, vertical. Edit here and changes propagate to Reconciliation, Health, Ban Tracker.</p>
+        <div class="filter-bar">
+          <input type="text" id="sot-search" placeholder="🔍  Search account, vendor, buyer, profile, pixel, BM..." oninput="applySotFilter()"/>
+          <select id="sot-filter-status" onchange="applySotFilter()">
+            <option value="">All status</option>
+            <option value="ATIVO">ATIVO</option>
+            <option value="BANNED">BANNED</option>
+            <option value="RESTRICTED">RESTRICTED</option>
+          </select>
+          <span class="filter-count" id="sot-filter-count"></span>
+        </div>
+        <div class="tw">
+          <table>
+            <thead><tr>
+              <th>Account</th>
+              <th>Status</th>
+              <th>Vendor</th>
+              <th>Buyer</th>
+              <th>Vertical</th>
+              <th>FB Profile</th>
+              <th>BM</th>
+              <th>Pixel</th>
+              <th>AdsPower Profile</th>
+              <th>AdsPower Group</th>
+              <th>Proxy</th>
+            </tr></thead>
+            <tbody id="sot-tb"></tbody>
+          </table>
+        </div>
+        <div id="sot-empty" class="empty-s" style="display:none">No accounts. Connect a workspace first.</div>
       </div>
     </div>
 
@@ -632,6 +680,24 @@ tr.filtered-out{display:none}
           <button class="btn gold" onclick="openTgChatModal()">+ Add chat</button>
         </div>
         <div id="tg-chats-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-hdr">
+          <div class="card-title">DSL alerts</div>
+        </div>
+        <p class="card-hint">Force-reset all DSL alert state across every workspace. Use this when Meta lags returning new-day spend and the system thinks accounts are still at cap from yesterday. Next check re-evaluates from scratch.</p>
+        <button class="btn" onclick="resetDslAlerts()">Reset all DSL alert state</button>
+      </div>
+      <div class="card">
+        <div class="card-hdr">
+          <div class="card-title">Backup &amp; restore</div>
+        </div>
+        <p class="card-hint">Export all UMBRA data to a single JSON file (workspaces, bans, vendor scores, assets, Telegram config, warming pipeline, password salt). Tokens stay encrypted in the export — your password is still required to decrypt them after restore. Use this to move between machines or before risky changes.</p>
+        <div class="brow">
+          <button class="btn gold" onclick="exportBackup()">↓ Export backup</button>
+          <button class="btn" onclick="document.getElementById('umbra-import-file').click()">↑ Import backup</button>
+          <input type="file" id="umbra-import-file" accept="application/json,.json" style="display:none" onchange="importBackup(event)"/>
+        </div>
       </div>
     </div>
 
@@ -805,23 +871,125 @@ function sanitizeNum(v){
   const n=parseFloat(s);
   return isNaN(n)||n<0?0:Math.min(n,999999999);
 }
+// ═══ CRYPTO (PBKDF2 auth + XOR-with-derived-key field cipher) ═══════════
+let cryptoKey=null; // 32-byte Uint8Array, derived from password, in-memory only
+
+function bytesToB64(arr){let s='';for(let i=0;i<arr.length;i++)s+=String.fromCharCode(arr[i]);return btoa(s);}
+function b64ToBytes(b64){const bin=atob(b64);const arr=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);return arr;}
+
+async function getOrCreateSalt(){
+  let s=localStorage.getItem('umbra_salt');
+  if(s){try{return b64ToBytes(s);}catch(e){}}
+  const arr=crypto.getRandomValues(new Uint8Array(16));
+  localStorage.setItem('umbra_salt',bytesToB64(arr));
+  return arr;
+}
+
+async function deriveBits(pw,info){
+  const salt=await getOrCreateSalt();
+  const enc=new TextEncoder();
+  const infoBytes=enc.encode(info);
+  const mixed=new Uint8Array(salt.length+infoBytes.length);
+  mixed.set(salt,0);mixed.set(infoBytes,salt.length);
+  const baseKey=await crypto.subtle.importKey('raw',enc.encode(pw),{name:'PBKDF2'},false,['deriveBits']);
+  const bits=await crypto.subtle.deriveBits({name:'PBKDF2',salt:mixed,iterations:200000,hash:'SHA-256'},baseKey,256);
+  return new Uint8Array(bits);
+}
+
 async function hashPw(pw){
+  const bits=await deriveBits(pw,'auth');
+  return Array.from(bits).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function deriveKey(pw){
+  return await deriveBits(pw,'cipher');
+}
+// Legacy single-round SHA-256 hash, kept only to migrate existing users.
+async function legacyHash(pw){
   const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pw));
   return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+function encField(plain){
+  if(!cryptoKey||plain==null||plain==='') return plain;
+  const bytes=new TextEncoder().encode(String(plain));
+  const out=new Uint8Array(bytes.length);
+  for(let i=0;i<bytes.length;i++) out[i]=bytes[i]^cryptoKey[i%cryptoKey.length];
+  return 'x1:'+bytesToB64(out);
+}
+function decField(payload){
+  if(payload==null||payload==='') return payload;
+  if(typeof payload!=='string'||!payload.startsWith('x1:')) return payload;
+  if(!cryptoKey) return ''; // can't decrypt without key — treat as missing
+  try{
+    const bytes=b64ToBytes(payload.slice(3));
+    const out=new Uint8Array(bytes.length);
+    for(let i=0;i<bytes.length;i++) out[i]=bytes[i]^cryptoKey[i%cryptoKey.length];
+    return new TextDecoder().decode(out);
+  }catch(e){return '';}
+}
+
+// Persisted lockout state — survives page reload
+function loadLockState(){
+  try{
+    const d=localStorage.getItem('umbra_lock');
+    if(!d) return;
+    const p=JSON.parse(d);
+    loginAttempts=p.attempts||0;
+    lockedUntil=p.until||0;
+    if(lockedUntil&&Date.now()>=lockedUntil){loginAttempts=0;lockedUntil=0;saveLockState();}
+  }catch(e){}
+}
+function saveLockState(){
+  try{localStorage.setItem('umbra_lock',JSON.stringify({attempts:loginAttempts,until:lockedUntil}));}catch(e){}
 }
 async function doLogin(){
   const now=Date.now();
   if(now<lockedUntil){showLoginErr('Locked. Try again in '+Math.ceil((lockedUntil-now)/60000)+' min.');return;}
   const pw=document.getElementById('pw-inp').value;
-  if(!pw||pw.length<4){showLoginErr('Password must be at least 4 characters.');return;}
-  const hash=await hashPw(pw);
   const stored=localStorage.getItem('umbra_pw');
-  if(!stored){localStorage.setItem('umbra_pw',hash);startSession();return;}
-  if(hash===stored){loginAttempts=0;startSession();}
-  else{
+  const haveSalt=!!localStorage.getItem('umbra_salt');
+  if(!stored){
+    // First-time setup — enforce stronger minimum
+    if(!pw||pw.length<8){showLoginErr('Password must be at least 8 characters.');return;}
+    const newHash=await hashPw(pw);
+    localStorage.setItem('umbra_pw',newHash);
+    cryptoKey=await deriveKey(pw);
+    sessionStorage.setItem('umbra_key',bytesToB64(cryptoKey));
+    loginAttempts=0;lockedUntil=0;saveLockState();
+    startSession();
+    return;
+  }
+  if(!pw){showLoginErr('Enter your password.');return;}
+  let valid=false, migrated=false;
+  if(haveSalt){
+    const newHash=await hashPw(pw);
+    valid=(newHash===stored);
+  } else {
+    // Legacy SHA-256 path — migrate on success
+    const oldHash=await legacyHash(pw);
+    if(oldHash===stored){
+      valid=true;
+      const newHash=await hashPw(pw);
+      localStorage.setItem('umbra_pw',newHash);
+      migrated=true;
+    }
+  }
+  if(valid){
+    loginAttempts=0;lockedUntil=0;saveLockState();
+    cryptoKey=await deriveKey(pw);
+    sessionStorage.setItem('umbra_key',bytesToB64(cryptoKey));
+    if(migrated) addLog('Password storage upgraded to PBKDF2','ok');
+    startSession();
+  } else {
     loginAttempts++;
-    if(loginAttempts>=MAX_ATTEMPTS){lockedUntil=Date.now()+LOCKOUT_MS;showLoginErr('Locked for 15 min after '+MAX_ATTEMPTS+' failed attempts.');}
-    else showLoginErr('Wrong password. '+(MAX_ATTEMPTS-loginAttempts)+' attempt(s) remaining.');
+    if(loginAttempts>=MAX_ATTEMPTS){
+      lockedUntil=Date.now()+LOCKOUT_MS;
+      saveLockState();
+      showLoginErr('Locked for 15 min after '+MAX_ATTEMPTS+' failed attempts.');
+    } else {
+      saveLockState();
+      showLoginErr('Wrong password. '+(MAX_ATTEMPTS-loginAttempts)+' attempt(s) remaining.');
+    }
   }
 }
 function showLoginErr(m){const e=document.getElementById('login-err');e.textContent=m;e.style.display='block';}
@@ -832,6 +1000,9 @@ function startSession(){
   document.getElementById('login-hint').textContent='Password set.';
   loadAllStorage();
   loadAssets();
+  loadTgConfig();
+  loadBans();
+  loadVendorScores();
   localStorage.setItem('umbra_session', JSON.stringify({expires: Date.now() + 24*60*60*1000}));
   addLog('Session started','ok');
   renderWorkspaceList();
@@ -845,6 +1016,14 @@ function startSession(){
 }
 function doLogout(){
   clearAllTimers();
+  // Zeroize sensitive in-memory state
+  workspaces.forEach(w=>{w.token='';});
+  workspaces=[];
+  activeWsId=null;
+  tgConfig={token:'',chats:[]};
+  if(cryptoKey){for(let i=0;i<cryptoKey.length;i++) cryptoKey[i]=0;}
+  cryptoKey=null;
+  sessionStorage.removeItem('umbra_key');
   localStorage.removeItem('umbra_session');
   document.getElementById('app').style.display='none';
   document.getElementById('login-screen').style.display='flex';
@@ -864,8 +1043,9 @@ function toggleTheme(){applyTheme(currentTheme==='dark'?'light':'dark');}
 applyTheme(currentTheme);
 
 // ═══ TELEGRAM ════════════════════════════════════════════════════════════
-// Legacy fallback values — used silently until the user configures Settings.
-const TG_LEGACY={token:'8700935512:AAF1oz_Ynv4cCq9lyA_7fXaAIAoXPdSweBw',chat:'5245753077'};
+// Bot token + chat IDs are user-configured via the Settings tab.
+// Nothing is hardcoded here so the deployed source never exposes credentials.
+const TG_LEGACY={token:'',chat:''};
 let tgConfig={token:'',chats:[]}; // chats: [{id,name,chatId,enabled}]
 
 function loadTgConfig(){
@@ -873,18 +1053,24 @@ function loadTgConfig(){
     const d=localStorage.getItem('umbra_tg_config');
     if(d){
       const parsed=JSON.parse(d);
-      tgConfig.token=parsed.token||'';
+      const rawToken=parsed.token||'';
+      tgConfig.token=parsed.encV===1?decField(rawToken):rawToken;
       tgConfig.chats=Array.isArray(parsed.chats)?parsed.chats:[];
     }
   }catch(e){tgConfig={token:'',chats:[]};}
 }
-function saveTgConfig(){try{localStorage.setItem('umbra_tg_config',JSON.stringify(tgConfig));}catch(e){}}
+function saveTgConfig(){
+  try{
+    const payload={token:encField(tgConfig.token||''),encV:cryptoKey?1:0,chats:tgConfig.chats||[]};
+    localStorage.setItem('umbra_tg_config',JSON.stringify(payload));
+  }catch(e){}
+}
 
 function tgActiveTargets(){
   const token=tgConfig.token||TG_LEGACY.token;
   let chats=tgConfig.chats.filter(c=>c.enabled&&c.chatId);
-  // Silent legacy mode: never configured anything → route to legacy chat
-  if(chats.length===0&&!tgConfig.token&&tgConfig.chats.length===0){
+  // Optional legacy fallback — only if both legacy values exist
+  if(chats.length===0&&!tgConfig.token&&tgConfig.chats.length===0&&TG_LEGACY.chat){
     chats=[{name:'Legacy',chatId:TG_LEGACY.chat,enabled:true}];
   }
   return {token,chats};
@@ -895,9 +1081,9 @@ function playAlert(layer){
   try{
     const ctx=new(window.AudioContext||window.webkitAudioContext)();
     const patterns={
-      3:[[440,0.1],[0,0.05],[440,0.1],[0,0.05],[440,0.2]],      // L3: 3 beeps
-      4:[[330,0.15],[0,0.05],[330,0.15],[0,0.05],[220,0.4]],    // L4: descending urgent
-      5:[[880,0.1],[660,0.1],[880,0.1],[660,0.1],[880,0.1],[660,0.1],[440,0.5]], // L5: rapid alarm
+      5:[[440,0.1],[0,0.05],[440,0.1],[0,0.05],[440,0.2]],      // L5 (10%): 3 beeps
+      6:[[330,0.15],[0,0.05],[330,0.15],[0,0.05],[220,0.4]],    // L6 (zero): descending urgent
+      7:[[880,0.1],[660,0.1],[880,0.1],[660,0.1],[880,0.1],[660,0.1],[440,0.5]], // L7 (neg): rapid alarm
     };
     const seq=patterns[layer];
     if(!seq) return;
@@ -908,8 +1094,8 @@ function playAlert(layer){
       const gain=ctx.createGain();
       osc.connect(gain);gain.connect(ctx.destination);
       osc.frequency.value=freq;
-      osc.type=layer===5?'sawtooth':'sine';
-      gain.gain.setValueAtTime(layer===5?0.3:0.2,time);
+      osc.type=layer===7?'sawtooth':'sine';
+      gain.gain.setValueAtTime(layer===7?0.3:0.2,time);
       gain.gain.exponentialRampToValueAtTime(0.001,time+dur);
       osc.start(time);osc.stop(time+dur);
       time+=dur;
@@ -937,20 +1123,79 @@ async function sendWA(body){
 }
 
 // ═══ ALERT MESSAGES ══════════════════════════════════════════════════════
+// Telegram Markdown V1 has special chars that break formatting if unescaped.
+function tgEsc(s){return String(s||'').replace(/[*_`\[\]]/g,'');}
+
+// Builds a comprehensive identity + balance + DSL block for any account alert.
+// Used by every status / balance / DSL alert template so the operator gets
+// EVERYTHING they need to triage in a single Telegram message.
+function buildAcctInfo(ws,a){
+  const m=(ws.acctMeta&&ws.acctMeta[a.id])||{};
+  const cur=a.currency||'USD';
+  const sym=cur==='BRL'?'R$ ':cur==='EUR'?'€':cur==='GBP'?'£':'$';
+  const vb=(ws.balances&&ws.balances[a.id])||0;
+  const sp=(ws.spends&&ws.spends[a.id])||0;
+  const rem=vb-sp;
+  const dsl=parseFloat(m.dsl)||0;
+  const lines=[];
+  lines.push('*Workspace:* '+tgEsc(ws.name));
+  lines.push('*Account:* *'+tgEsc(a.name)+'*');
+  lines.push('*ID:* `'+tgEsc(a.id)+'`');
+  lines.push('*Status:* *'+sLabel(a.account_status)+'*');
+  if(m.vendor)         lines.push('*Vendor:* '+tgEsc(m.vendor));
+  if(m.buyer)          lines.push('*Buyer:* '+tgEsc(m.buyer));
+  if(m.bm)             lines.push('*BM:* '+tgEsc(m.bm));
+  if(m.vertical)       lines.push('*Vertical:* '+tgEsc(m.vertical));
+  if(m.fbProfile)      lines.push('*FB Profile:* '+tgEsc(m.fbProfile));
+  if(m.pixel)          lines.push('*Pixel:* `'+tgEsc(m.pixel)+'`');
+  if(m.dolphinProfile) lines.push('*AdsPower:* '+tgEsc(m.dolphinProfile)+(m.adsPowerGroup?' / '+tgEsc(m.adsPowerGroup):''));
+  else if(m.adsPowerGroup) lines.push('*AdsPower Group:* '+tgEsc(m.adsPowerGroup));
+  if(m.proxy)          lines.push('*Proxy:* `'+tgEsc(m.proxy)+'`');
+  if(vb>0||sp>0){
+    lines.push('*Balance:* '+sym+Math.round(vb).toLocaleString());
+    lines.push('*Spend today:* '+sym+Math.round(sp).toLocaleString());
+    const pct=vb>0?Math.round((rem/vb)*100):null;
+    lines.push('*Remaining:* '+sym+Math.round(rem).toLocaleString()+(pct!==null?' ('+pct+'%)':''));
+  }
+  if(dsl>0){
+    const dslPct=Math.round((sp/dsl)*100);
+    lines.push('*DSL:* '+sym+Math.round(dsl).toLocaleString()+' · '+dslPct+'% used');
+  }
+  return lines.join('\n');
+}
+
+const _SEP='━'.repeat(30);
 const MSGS={
-  l1:(ws,n,v,b,rem,pct,sym)=>`*⚠️ UMBRA — ATTENTION*\n*${'─'.repeat(28)}*\n*Workspace:* *${ws}*\n*Account:* *${n}*\n*Vendor:* *${v||'—'}* | *Buyer:* *${b||'—'}*\n*${'─'.repeat(28)}*\n*Balance at ${pct}% → ${sym}${Math.round(rem)} remaining*\n\n*🎯 NEXT ACTION:*\n*Notify vendor that top-up will be needed in the next few days. Begin scheduling.*`,
-  l2:(ws,n,v,b,rem,pct,sym)=>`*🔶 UMBRA — ALERT*\n*${'─'.repeat(28)}*\n*Workspace:* *${ws}*\n*Account:* *${n}*\n*Vendor:* *${v||'—'}* | *Buyer:* *${b||'—'}*\n*${'─'.repeat(28)}*\n*Balance at ${pct}% → ${sym}${Math.round(rem)} remaining*\n\n*🎯 NEXT ACTION:*\n*Request top-up TODAY. Confirm timing with vendor — valid within 24h.*`,
-  l3:(ws,n,v,b,rem,pct,sym)=>`*🔴 UMBRA — CRITICAL*\n*${'─'.repeat(28)}*\n*Workspace:* *${ws}*\n*Account:* *${n}*\n*Vendor:* *${v||'—'}* | *Buyer:* *${b||'—'}*\n*${'─'.repeat(28)}*\n*Balance at ${pct}% → ${sym}${Math.round(rem)} remaining*\n\n*🚨 NEXT ACTION:*\n*URGENT — direct contact with vendor. Top-up must process in the next hours.*`,
-  l4:(ws,n,v,b,sym)=>`*🚨 UMBRA — ACCOUNT ZEROED*\n*${'─'.repeat(28)}*\n*Workspace:* *${ws}*\n*Account:* *${n}*\n*Vendor:* *${v||'—'}* | *Buyer:* *${b||'—'}*\n*${'─'.repeat(28)}*\n*Balance ZERO. Spend stopped.*\n\n*🚨🚨 NEXT ACTION:*\n*Contact vendor IMMEDIATELY. Expedite top-up to restart spend.*`,
-  l5:(ws,n,v,b,amt,sym)=>`*🚨🚨 UMBRA — EMERGENCY*\n*${'─'.repeat(28)}*\n*Workspace:* *${ws}*\n*Account:* *${n}*\n*Vendor:* *${v||'—'}* | *Buyer:* *${b||'—'}*\n*${'─'.repeat(28)}*\n*Spend EXCEEDED balance by ${sym}${Math.abs(Math.round(amt))}*\n\n*🔥 NEXT ACTION:*\n*Contact vendor NOW. Confirm overspend and align on settlement immediately.*`,
-  disabled:(ws,n,v,b)=>`*🔴 UMBRA — ACCOUNT DISABLED*\n*${'─'.repeat(28)}*\n*Workspace:* *${ws}*\n*Account:* *${n}*\n*Vendor:* *${v||'—'}* | *Buyer:* *${b||'—'}*\n*${'─'.repeat(28)}*\n*🎯 NEXT ACTION:*\n*Request replacement account + balance transfer from vendor immediately.*`,
-  warn:(ws,n,v,b)=>`*⚠️ UMBRA — WARNING*\n*${'─'.repeat(28)}*\n*Workspace:* *${ws}*\n*Account:* *${n}*\n*Vendor:* *${v||'—'}* | *Buyer:* *${b||'—'}*\n*${'─'.repeat(28)}*\n*Billing or policy issue detected.*\n\n*🎯 NEXT ACTION:*\n*Investigate via Meta Business Suite. Resolve or escalate to vendor within 24h.*`,
-  change:(ws,n,v,b,s1,s2)=>`*🚨 UMBRA — STATUS CHANGE*\n*${'─'.repeat(28)}*\n*Workspace:* *${ws}*\n*Account:* *${n}*\n*Vendor:* *${v||'—'}* | *Buyer:* *${b||'—'}*\n*${'─'.repeat(28)}*\n*Status: ${s1} → ${s2}*\n\n*🚨 NEXT ACTION:*\n*Check account immediately. Determine if vendor escalation is required.*`,
-  repeat:(ws,n,v,b,lbl)=>`*⏰ UMBRA — 24h REMINDER*\n*${'─'.repeat(28)}*\n*Workspace:* *${ws}*\n*Account:* *${n}*\n*Vendor:* *${v||'—'}* | *Buyer:* *${b||'—'}*\n*${'─'.repeat(28)}*\n*Issue persists: ${lbl}*\n\n*🎯 NEXT ACTION:*\n*Escalate. Issue is past 24h with no resolution.*`,
-  tokenExpired:(ws)=>`*🚨🚨 UMBRA — TOKEN EXPIRED*\n*${'─'.repeat(28)}*\n*Workspace:* *${ws}*\n*${'─'.repeat(28)}*\n*CRITICAL: Meta API token is invalid or expired.*\n\n*🔥 NEXT ACTION:*\n*Renew token immediately to restore monitoring on this workspace.*`,
-  checkDone:(results)=>`*✅ UMBRA — Cycle Check Complete*\n*${'─'.repeat(28)}*\n${results}\n*${'─'.repeat(28)}*\n*Next check scheduled.*`,
-  dsl90:(ws,n,v,b,sp,dsl,sym)=>`*🟠 UMBRA — DSL APPROACHING*\n*${'─'.repeat(28)}*\n*Workspace:* *${ws}*\n*Account:* *${n}*\n*Vendor:* *${v||'—'}* | *Buyer:* *${b||'—'}*\n*${'─'.repeat(28)}*\n*Spend ${sym}${Math.round(sp)} / DSL ${sym}${Math.round(dsl)} (${Math.round(sp/dsl*100)}%)*\n\n*🎯 NEXT ACTION:*\n*Account is near the DSL cap. Decide whether to throttle or push for a DSL increase.*`,
-  dslCap:(ws,n,v,b,sp,dsl,sym)=>`*🛑 UMBRA — DSL CAP HIT*\n*${'─'.repeat(28)}*\n*Workspace:* *${ws}*\n*Account:* *${n}*\n*Vendor:* *${v||'—'}* | *Buyer:* *${b||'—'}*\n*${'─'.repeat(28)}*\n*Spend ${sym}${Math.round(sp)} / DSL ${sym}${Math.round(dsl)} → ${Math.round(sp/dsl*100)}%*\n\n*🔥 NEXT ACTION:*\n*Account hit Daily Spend Limit. Spend stops until midnight or DSL increase.*`,
+  // Balance escalation — L1=50%, L2=40%, L3=30%, L4=20%, L5=10%, L6=zero, L7=negative
+  l1:(ws,a)=>`*💛 BALANCE L1 — 50% — ${tgEsc(a.name)}*\n${_SEP}\n${buildAcctInfo(ws,a)}\n${_SEP}\n🎯 ACTION: Top up soon. Monitor vendor response time.`,
+  l2:(ws,a)=>`*🟠 BALANCE L2 — 40% — ${tgEsc(a.name)}*\n${_SEP}\n${buildAcctInfo(ws,a)}\n${_SEP}\n🎯 ACTION: Schedule top up with vendor now.`,
+  l3:(ws,a)=>`*🔶 BALANCE L3 — 30% — ${tgEsc(a.name)}*\n${_SEP}\n${buildAcctInfo(ws,a)}\n${_SEP}\n🎯 ACTION: Contact vendor immediately to initiate transfer.`,
+  l4:(ws,a)=>`*🔴 BALANCE L4 — 20% — ${tgEsc(a.name)}*\n${_SEP}\n${buildAcctInfo(ws,a)}\n${_SEP}\n🎯 ACTION: Urgent — top up required. Pause spend if vendor unresponsive.`,
+  l5:(ws,a)=>`*🚨 BALANCE L5 — 10% — ${tgEsc(a.name)}*\n${_SEP}\n${buildAcctInfo(ws,a)}\n${_SEP}\n🎯 ACTION: Critical — pause spend now and escalate to vendor.`,
+  l6:(ws,a)=>`*⛔ BALANCE L6 — ZERO — ${tgEsc(a.name)}*\n${_SEP}\n${buildAcctInfo(ws,a)}\n${_SEP}\n🎯 ACTION: Account has no balance. Spend stopped. Resolve with vendor before relaunching.`,
+  l7:(ws,a)=>`*🚨🚨 BALANCE L7 — NEGATIVE — ${tgEsc(a.name)}*\n${_SEP}\n${buildAcctInfo(ws,a)}\n${_SEP}\n🎯 ACTION: Overspend detected. Contact vendor NOW to align on settlement.`,
+
+  // DSL escalation — 70 / 80 / 90 / 100, escalates only, no resend on same tier
+  dsl70:(ws,a)=>`*⚠️ DSL AT 70% — ${tgEsc(a.name)}*\n${_SEP}\n${buildAcctInfo(ws,a)}\n${_SEP}\n🎯 ACTION: Monitor spend pace. Prepare contingency account.`,
+  dsl80:(ws,a)=>`*🟠 DSL AT 80% — ${tgEsc(a.name)}*\n${_SEP}\n${buildAcctInfo(ws,a)}\n${_SEP}\n🎯 ACTION: Switch to contingency account now if available.`,
+  dsl90:(ws,a)=>`*🔴 DSL AT 90% — ${tgEsc(a.name)}*\n${_SEP}\n${buildAcctInfo(ws,a)}\n${_SEP}\n🎯 ACTION: Pause new spend. Contact vendor for limit increase.`,
+  dslCap:(ws,a)=>`*🚨 DSL CAP HIT — 100% — ${tgEsc(a.name)}*\n${_SEP}\n${buildAcctInfo(ws,a)}\n${_SEP}\n🎯 ACTION: Spend stopped. Request limit increase or switch account immediately.`,
+
+  // Status alerts
+  disabled:(ws,a)=>`*🔴 ACCOUNT BANNED — ${tgEsc(a.name)}*\n${_SEP}\n${buildAcctInfo(ws,a)}\n${_SEP}\n🎯 ACTION: Request replacement account + balance transfer from vendor immediately.`,
+  warn:(ws,a)=>`*⚠️ ACCOUNT RESTRICTED — ${tgEsc(a.name)}*\n${_SEP}\n${buildAcctInfo(ws,a)}\n${_SEP}\n🎯 ACTION: Investigate in Meta Business Suite. Pause spend if unresolved within 24h.`,
+  // Edge case: Meta returns a status code outside the BANNED/RESTRICTED buckets.
+  // Detection logic still routes here so the operator gets visibility — same template style.
+  change:(ws,a,s1,s2)=>`*🔄 STATUS CHANGE — ${tgEsc(a.name)}*\n${_SEP}\n*Transition:* *${sLabel(s1)}* → *${sLabel(s2)}*\n${buildAcctInfo(ws,a)}\n${_SEP}\n🎯 ACTION: Check account immediately. Determine if vendor escalation is required.`,
+  // 24h reminder fallback — fires only via the existing dedup logic when the same
+  // tier persists past 24h. Kept per "não muda lógica de dedup".
+  repeat:(ws,a,lbl)=>`*⏰ 24h REMINDER — ${tgEsc(a.name)}*\n${_SEP}\n*Issue persists:* *${lbl}*\n${buildAcctInfo(ws,a)}\n${_SEP}\n🎯 ACTION: Escalate. Issue is past 24h with no resolution.`,
+
+  // Token expired — workspace-level (no account context)
+  tokenExpired:(ws)=>`*🚨🚨 TOKEN EXPIRED — ${tgEsc(ws)}*\n${_SEP}\nWorkspace: *${tgEsc(ws)}*\n${_SEP}\n🎯 ACTION: Workspace is blind — no monitoring active. Renew token immediately.`,
+
+  // Cycle complete — kept only for in-app banner + log; no longer sent to Telegram.
+  checkDone:(results)=>`*✅ Cycle Complete*\n${_SEP}\n${results}\n${_SEP}`,
 };
 
 // ═══ WORKSPACE STATE ══════════════════════════════════════════════════════
@@ -995,7 +1240,10 @@ function getRlPct(token){
 function saveAllStorage(){
   try{
     const toSave=workspaces.map(w=>({
-      id:w.id,name:w.name,token:w.token,color:w.color,
+      id:w.id,name:w.name,
+      token:encField(w.token),
+      encV:cryptoKey?1:0,
+      color:w.color,
       acctMeta:w.acctMeta,balances:w.balances,alertState:w.alertState,
       dslAlertState:w.dslAlertState||{}
     }));
@@ -1009,6 +1257,7 @@ function loadAllStorage(){
     const saved=JSON.parse(d);
     workspaces=saved.map(w=>({
       ...w,
+      token: w.encV===1?decField(w.token):(w.token||''),
       accounts:[],spends:{},prevStatus:{},
       acctMeta:w.acctMeta||{},
       balances:w.balances||{},
@@ -1049,35 +1298,19 @@ function deleteWorkspace(id){
 async function connectWorkspace(id){
   const ws=getWs(id);
   if(!ws) return;
-  if(!canCallApi(ws.token)){return;}
   ws.status='connecting';
   renderWsDropdown();
   try{
-    trackApiCall(ws.token);
-    const r=await fetch('https://graph.facebook.com/v21.0/me/adaccounts?fields=id,name,account_status,currency,amount_spent,disable_reason&limit=25&access_token='+ws.token);
-    const d=await r.json();
-    if(d.error){
-      ws.status='error';
-      ws.errorMsg=d.error.message;
-      renderWsDropdown();
-      addLog('['+ws.name+'] API error: '+d.error.message,'err');
-      // Check if token expired
-      if(d.error.code===190){
-        sendWA(MSGS.tokenExpired(ws.name));
-        showBanner('critical','🔴','Token Expired','Workspace "'+ws.name+'" has an expired or invalid token. Renew it immediately to restore monitoring.','OK');
-      }
-      return;
-    }
-    ws.accounts=d.data||[];
+    const accounts=await metaFetchPaged(ws,'id,name,account_status,currency,amount_spent,disable_reason',{limit:100});
+    ws.accounts=accounts;
     ws.status='connected';
-    ws.accounts.forEach(a=>{
+    accounts.forEach(a=>{
       if(!ws.prevStatus[a.id]) ws.prevStatus[a.id]=a.account_status;
-      if(!ws.acctMeta[a.id]) ws.acctMeta[a.id]={vendor:'',buyer:'',bm:'',vertical:'',dolphinProfile:'',proxy:'',dsl:''};
+      if(!ws.acctMeta[a.id]) ws.acctMeta[a.id]={vendor:'',buyer:'',bm:'',vertical:'',dolphinProfile:'',proxy:'',dsl:'',fbProfile:'',pixel:'',adsPowerGroup:''};
     });
     saveAllStorage();
     renderWsDropdown();
-    addLog('['+ws.name+'] Connected — '+ws.accounts.length+' accounts','ok');
-    // Only render if this is still the active workspace (race condition guard)
+    addLog('['+ws.name+'] Connected — '+ws.accounts.length+' account(s)','ok');
     if(activeWsId===id) renderActiveWorkspace();
   }catch(e){
     ws.status='error';ws.errorMsg=e.message;
@@ -1130,6 +1363,7 @@ function renderWsDropdown(){
     opt.textContent='No workspaces';
     sel.appendChild(opt);
   }
+  if(typeof updateWsErrorBanner==='function') updateWsErrorBanner();
 }
 
 function renderWorkspaceList(){
@@ -1163,7 +1397,7 @@ async function saveNewWorkspace(){
     const ws=getWs(id);
     ws.accounts=d.data||[];
     ws.status='connected';
-    ws.accounts.forEach(a=>{ws.prevStatus[a.id]=a.account_status;ws.acctMeta[a.id]={vendor:'',buyer:'',bm:'',vertical:'',dolphinProfile:'',proxy:'',dsl:''}});
+    ws.accounts.forEach(a=>{ws.prevStatus[a.id]=a.account_status;ws.acctMeta[a.id]={vendor:'',buyer:'',bm:'',vertical:'',dolphinProfile:'',proxy:'',dsl:'',fbProfile:'',pixel:'',adsPowerGroup:''}});
     saveAllStorage();
     closeAddWs();
     renderWorkspaceList();
@@ -1218,18 +1452,36 @@ function clearLog(){
 }
 
 function sPill(code){
-  const map={1:['Active','p-ok'],2:['Disabled','p-danger'],3:['Unsettled','p-warn'],
-    9:['Grace period','p-warn'],100:['Pending closure','p-warn'],101:['Closed','p-danger']};
+  const map={
+    1:['ATIVO','p-ok'],
+    2:['BANNED','p-danger'],
+    3:['RESTRICTED','p-warn'],
+    9:['RESTRICTED','p-warn'],
+    100:['RESTRICTED','p-warn'],
+    101:['BANNED','p-danger']
+  };
   const [l,c]=map[code]||['Status '+code,'p-gray'];
   return'<span class="pill '+c+'">'+l+'</span>';
 }
+function sLabel(code){
+  const map={1:'ATIVO',2:'BANNED',3:'RESTRICTED',9:'RESTRICTED',100:'RESTRICTED',101:'BANNED'};
+  return map[code]||('Status '+code);
+}
 function layerPill(layer){
   if(!layer||layer===0) return'<span class="pill p-info">Enter balance</span>';
-  const cfg=[null,['L1 — 20%','p-l1'],['L2 — 10%','p-l2'],['L3 — 5%','p-l3'],['L4 — Zero','p-l4'],['L5','p-l5']];
+  const cfg=[null,
+    ['L1 — 50%','p-l1'],
+    ['L2 — 40%','p-l1'],
+    ['L3 — 30%','p-l2'],
+    ['L4 — 20%','p-l2'],
+    ['L5 — 10%','p-l3'],
+    ['L6 — Zero','p-l4'],
+    ['L7 — Neg','p-l5']
+  ];
   const [l,c]=cfg[layer]||['—','p-gray'];
   return'<span class="pill '+c+'">'+l+'</span>';
 }
-function rowClass(layer){return['','rwatch','rwarn','rwarn','rdanger','rdanger'][layer]||'';}
+function rowClass(layer){return['','rwatch','rwatch','rwarn','rwarn','rwarn','rdanger','rdanger'][layer]||'';}
 function dslPill(usagePct){
   if(!isFinite(usagePct)) return '<span class="pill p-gray">—</span>';
   const v=Math.round(usagePct);
@@ -1248,22 +1500,141 @@ async function apiFetchWs(ws, path){
   return r.json();
 }
 
+// Paginated fetch of /me/adaccounts — handles hundreds of accounts cleanly.
+// Each page = 1 API call (rate-limited per token). paging.next URLs already
+// carry access_token + fields, so we fetch them as-is.
+async function metaFetchPaged(ws, fields, opts){
+  opts=opts||{};
+  const limit=opts.limit||100;
+  const all=[];
+  let url='https://graph.facebook.com/v21.0/me/adaccounts?fields='+encodeURIComponent(fields)+'&limit='+limit+'&access_token='+encodeURIComponent(ws.token);
+  let safety=0;
+  while(url&&safety<50){
+    if(!canCallApi(ws.token)) throw new Error('Rate limit');
+    trackApiCall(ws.token);
+    const r=await fetch(url);
+    const d=await r.json();
+    if(d.error){
+      if(d.error.code===190){
+        ws.status='error';ws.errorMsg='Token expired';
+        sendWA(MSGS.tokenExpired(ws.name));
+        showBanner('critical','🔴','Token Expired','Workspace "'+ws.name+'" token is expired. Renew immediately.','OK');
+      }
+      const err=new Error(d.error.message||'API error');
+      err.code=d.error.code;
+      throw err;
+    }
+    if(d.data) all.push(...d.data);
+    url=d.paging&&d.paging.next?d.paging.next:null;
+    safety++;
+  }
+  return all;
+}
+
+// Single-call workspace snapshot via nested field expansion.
+// Replaces N per-account calls with 1 (or N pages for very large workspaces).
+async function fetchWorkspaceSnapshot(ws, opts){
+  opts=opts||{};
+  const t=today();
+  const includeCampaigns=opts.includeCampaigns!==false;
+  let fields='id,name,account_status,currency,amount_spent,disable_reason';
+  fields+=',insights.time_range({"since":"'+t+'","until":"'+t+'"}){spend}';
+  if(includeCampaigns) fields+=',campaigns.limit(100){effective_status}';
+  // Smaller per-page limit because nested expansion makes responses heavy.
+  const accounts=await metaFetchPaged(ws,fields,{limit:50});
+  const map={};
+  accounts.forEach(acc=>{
+    const insight=acc.insights&&acc.insights.data&&acc.insights.data[0];
+    const spend=insight?parseFloat(insight.spend)||0:0;
+    let activeCampaigns=0;
+    if(includeCampaigns&&acc.campaigns&&acc.campaigns.data){
+      activeCampaigns=acc.campaigns.data.filter(c=>c.effective_status==='ACTIVE').length;
+    }
+    map[acc.id]={
+      spend,activeCampaigns,
+      account_status:acc.account_status,
+      currency:acc.currency,
+      amount_spent:acc.amount_spent,
+      disable_reason:acc.disable_reason,
+      name:acc.name
+    };
+  });
+  return map;
+}
+
 // ═══ RECONCILIATION ═══════════════════════════════════════════════════════
 function saveMetaWs(wsId, acctId){
   const ws=getWs(wsId);
   if(!ws) return;
-  const dslRaw=document.getElementById('dsl-'+acctId)?.value||'';
+  const existing=ws.acctMeta[acctId]||{};
+  // Preserve any field whose input isn't currently in the DOM
+  const readOrKeep=(elId,prevVal)=>{
+    const el=document.getElementById(elId);
+    return el?sanitize(el.value||''):(prevVal||'');
+  };
+  const dslEl=document.getElementById('dsl-'+acctId);
   ws.acctMeta[acctId]={
-    vendor:sanitize(document.getElementById('vendor-'+acctId)?.value||''),
-    buyer: sanitize(document.getElementById('buyer-'+acctId)?.value||''),
-    bm:    sanitize(document.getElementById('bm-'+acctId)?.value||''),
-    vertical:sanitize(document.getElementById('vertical-'+acctId)?.value||''),
-    dolphinProfile:sanitize(document.getElementById('profile-'+acctId)?.value||''),
-    proxy: sanitize(document.getElementById('proxy-'+acctId)?.value||''),
-    dsl:   dslRaw===''?'':sanitizeNum(dslRaw)
+    ...existing,
+    vendor:readOrKeep('vendor-'+acctId,existing.vendor),
+    buyer: readOrKeep('buyer-'+acctId, existing.buyer),
+    bm:    readOrKeep('bm-'+acctId,    existing.bm),
+    vertical:readOrKeep('vertical-'+acctId,existing.vertical),
+    dolphinProfile:readOrKeep('profile-'+acctId,existing.dolphinProfile),
+    proxy: readOrKeep('proxy-'+acctId, existing.proxy),
+    fbProfile: readOrKeep('fbprofile-'+acctId, existing.fbProfile),
+    pixel: readOrKeep('pixel-'+acctId, existing.pixel),
+    adsPowerGroup: readOrKeep('apgroup-'+acctId, existing.adsPowerGroup),
+    dsl:   dslEl?(dslEl.value===''?'':sanitizeNum(dslEl.value)):(existing.dsl||'')
   };
   saveAllStorage();
+  // Mirror overlapping inputs to SOT view if it's rendered
+  syncToSotInputs(acctId,ws.acctMeta[acctId]);
   if(typeof updateAllRows==='function') updateAllRows();
+}
+
+function saveSotMeta(wsId, acctId){
+  const ws=getWs(wsId);
+  if(!ws) return;
+  const existing=ws.acctMeta[acctId]||{};
+  const readOrKeep=(elId,prevVal)=>{
+    const el=document.getElementById(elId);
+    return el?sanitize(el.value||''):(prevVal||'');
+  };
+  ws.acctMeta[acctId]={
+    ...existing,
+    vendor:readOrKeep('sot-vendor-'+acctId,existing.vendor),
+    buyer: readOrKeep('sot-buyer-'+acctId, existing.buyer),
+    bm:    readOrKeep('sot-bm-'+acctId,    existing.bm),
+    vertical:readOrKeep('sot-vertical-'+acctId,existing.vertical),
+    fbProfile:readOrKeep('sot-fbprofile-'+acctId,existing.fbProfile),
+    pixel: readOrKeep('sot-pixel-'+acctId, existing.pixel),
+    dolphinProfile:readOrKeep('sot-profile-'+acctId,existing.dolphinProfile),
+    adsPowerGroup: readOrKeep('sot-apgroup-'+acctId,existing.adsPowerGroup),
+    proxy: readOrKeep('sot-proxy-'+acctId, existing.proxy)
+  };
+  saveAllStorage();
+  // Mirror back to Recon inputs (if rendered) so user sees consistent state
+  syncToReconInputs(acctId,ws.acctMeta[acctId]);
+}
+
+function syncToReconInputs(acctId,meta){
+  const map={vendor:'vendor-'+acctId,buyer:'buyer-'+acctId,bm:'bm-'+acctId,dolphinProfile:'profile-'+acctId};
+  Object.entries(map).forEach(([k,id])=>{
+    const el=document.getElementById(id);
+    if(el&&el.value!==(meta[k]||'')) el.value=meta[k]||'';
+  });
+}
+function syncToSotInputs(acctId,meta){
+  const map={
+    vendor:'sot-vendor-'+acctId,buyer:'sot-buyer-'+acctId,bm:'sot-bm-'+acctId,
+    vertical:'sot-vertical-'+acctId,dolphinProfile:'sot-profile-'+acctId,
+    proxy:'sot-proxy-'+acctId,fbProfile:'sot-fbprofile-'+acctId,
+    pixel:'sot-pixel-'+acctId,adsPowerGroup:'sot-apgroup-'+acctId
+  };
+  Object.entries(map).forEach(([k,id])=>{
+    const el=document.getElementById(id);
+    if(el&&el.value!==(meta[k]||'')) el.value=meta[k]||'';
+  });
 }
 
 function saveBalanceWs(wsId, acctId, val){
@@ -1274,8 +1645,9 @@ function saveBalanceWs(wsId, acctId, val){
 }
 
 
-function buildAssetSelect(id, options, current, wsId, acctId){
-  let html='<select class="cel" id="'+id+'" onchange="saveMetaWs(\''+wsId+'\',\''+acctId+'\')">';
+function buildAssetSelect(id, options, current, wsId, acctId, onChangeFn){
+  const fn=onChangeFn||'saveMetaWs';
+  let html='<select class="cel" id="'+id+'" onchange="'+fn+'(\''+wsId+'\',\''+acctId+'\')">';
   html+='<option value="">— None —</option>';
   options.forEach(opt=>{
     const sel=current===opt?' selected':'';
@@ -1304,10 +1676,8 @@ function buildReconRows(){
       '<div class="aname">'+sanitize(a.name)+'</div><div class="aid">'+sanitize(a.id)+'</div></td>'+
       '<td>'+buildAssetSelect('vendor-'+a.id,assets.vendors,m.vendor||'',ws.id,a.id)+'</td>'+
       '<td>'+buildAssetSelect('buyer-'+a.id,assets.buyers,m.buyer||'',ws.id,a.id)+'</td>'+
-      '<td><input class="cel" id="bm-'+a.id+'" placeholder="BM" value="'+sanitize(m.bm||'')+'" onchange="saveMetaWs(\''+ws.id+'\',\''+a.id+'\')"/></td>'+
-      '<td>'+buildAssetSelect('vertical-'+a.id,assets.verticals,m.vertical||'',ws.id,a.id)+'</td>'+
+      '<td><input class="cel" id="bm-'+a.id+'" placeholder="BM" value="'+sanitize(m.bm||'')+'" onchange="saveMetaWs(\''+ws.id+'\',\''+a.id+'\')" style="min-width:80px"/></td>'+
       '<td><input class="cel" id="profile-'+a.id+'" placeholder="A-PB-001" value="'+sanitize(m.dolphinProfile||'')+'" onchange="saveMetaWs(\''+ws.id+'\',\''+a.id+'\')" style="min-width:110px"/></td>'+
-      '<td><input class="cel mono" id="proxy-'+a.id+'" placeholder="192.168.0.1:8000" value="'+sanitize(m.proxy||'')+'" onchange="saveMetaWs(\''+ws.id+'\',\''+a.id+'\')" style="min-width:140px;font-size:12px"/></td>'+
       '<td><input class="cel cel-bal" type="number" id="dsl-'+a.id+'" placeholder="500" step="any" value="'+(m.dsl||m.dsl===0?m.dsl:'')+'" onchange="saveMetaWs(\''+ws.id+'\',\''+a.id+'\')"/></td>'+
       '<td><input class="cel cel-bal" type="number" id="bal-'+a.id+'" placeholder="0.00" step="any" value="'+bal+'" onchange="saveBalanceWs(\''+ws.id+'\',\''+a.id+'\',this.value)"/></td>'+
       '<td class="mono" id="rsp-'+a.id+'">—</td>'+
@@ -1317,57 +1687,41 @@ function buildReconRows(){
       '<td id="rflag-'+a.id+'"><span class="pill p-info">Enter balance</span></td>';
     tb.appendChild(tr);
   });
-  console.log('UMBRA: built '+ws.accounts.length+' rows for '+ws.name);
   populateFilters();
   applyFilters();
-}
-
-async function getSpendWs(ws, id){
-  const t=today();
-  try{
-    const d=await apiFetchWs(ws,id+'/insights?fields=spend&time_range={"since":"'+t+'","until":"'+t+'"}');
-    if(d.error&&d.error.code===190){
-      ws.status='error';ws.errorMsg='Token expired';
-      sendWA(MSGS.tokenExpired(ws.name));
-      showBanner('critical','🔴','Token Expired','Workspace "'+ws.name+'" token is expired. Renew immediately.','OK');
-      return 0;
-    }
-    return d.data&&d.data.length?parseFloat(d.data[0].spend)||0:0;
-  }catch{return 0;}
 }
 
 function getAlertLayer(vb,sp){
   if(vb<=0) return null;
   const rem=vb-sp,pct=(rem/vb)*100;
-  if(sp>vb) return 5;
-  if(rem<=0) return 4;
-  if(pct<=5) return 3;
-  if(pct<=10) return 2;
-  if(pct<=20) return 1;
+  if(sp>vb) return 7;     // L7: negative
+  if(rem<=0) return 6;    // L6: zero
+  if(pct<=10) return 5;   // L5: 10%
+  if(pct<=20) return 4;   // L4: 20%
+  if(pct<=30) return 3;   // L3: 30%
+  if(pct<=40) return 2;   // L2: 40%
+  if(pct<=50) return 1;   // L1: 50%
   return 0;
 }
 
 function checkAndAlertWs(ws,a,vb,sp){
   const layer=getAlertLayer(vb,sp);
   if(layer===null||layer===0){ws.alertState[a.id]=null;return;}
-  const m=ws.acctMeta[a.id]||{};
-  const v=m.vendor||'—',b=m.buyer||'—';
-  const rem=vb-sp,pct=vb>0?Math.round((rem/vb)*100):0;
-  const cur=a.currency||'USD';
-  const sym=cur==='BRL'?'R$ ':cur==='EUR'?'€':cur==='GBP'?'£':'$';
   const prev=ws.alertState[a.id],now=Date.now();
-  const lbl=['','20%','10%','5%','Zero','Negative'][layer];
+  const lbl=['','50%','40%','30%','20%','10%','Zero','Negative'][layer];
   let msg='';
-  if(layer===1) msg=MSGS.l1(ws.name,a.name,v,b,rem,pct,sym);
-  else if(layer===2) msg=MSGS.l2(ws.name,a.name,v,b,rem,pct,sym);
-  else if(layer===3) msg=MSGS.l3(ws.name,a.name,v,b,rem,pct,sym);
-  else if(layer===4) msg=MSGS.l4(ws.name,a.name,v,b,sym);
-  else if(layer===5) msg=MSGS.l5(ws.name,a.name,v,b,sp-vb,sym);
+  if(layer===1) msg=MSGS.l1(ws,a);
+  else if(layer===2) msg=MSGS.l2(ws,a);
+  else if(layer===3) msg=MSGS.l3(ws,a);
+  else if(layer===4) msg=MSGS.l4(ws,a);
+  else if(layer===5) msg=MSGS.l5(ws,a);
+  else if(layer===6) msg=MSGS.l6(ws,a);
+  else if(layer===7) msg=MSGS.l7(ws,a);
   const isNew=!prev,isWorse=prev&&layer>prev.layer,is24h=prev&&prev.layer===layer&&now-prev.ts>=86400000;
   if(isNew||isWorse||is24h){
-    if(is24h) msg=MSGS.repeat(ws.name,a.name,v,b,lbl);
+    if(is24h) msg=MSGS.repeat(ws,a,lbl);
     sendWA(msg);
-    if(layer>=3) playAlert(layer);
+    if(layer>=5) playAlert(layer);
     addLog('['+ws.name+'] '+(isNew?'🚨 L'+layer:isWorse?'🔺 L'+layer:'⏰ 24h')+': '+a.name,'warn');
     ws.alertState[a.id]={layer,ts:now};
     saveAllStorage();
@@ -1380,15 +1734,19 @@ function checkDslAlertWs(ws,a,sp){
   if(dsl<=0) return;
   if(!ws.dslAlertState) ws.dslAlertState={};
   const usage=(sp/dsl)*100;
+  // Tiers: 70 / 80 / 90 / 100 — escalates only, never resends same tier
   let tier=0;
   if(usage>=100) tier=100;
   else if(usage>=90) tier=90;
+  else if(usage>=80) tier=80;
+  else if(usage>=70) tier=70;
   const prev=ws.dslAlertState[a.id]||{tier:0};
   if(tier>prev.tier){
-    const v=m.vendor||'—',b=m.buyer||'—';
-    const cur=a.currency||'USD';
-    const sym=cur==='BRL'?'R$ ':cur==='EUR'?'€':cur==='GBP'?'£':'$';
-    const msg=tier===100?MSGS.dslCap(ws.name,a.name,v,b,sp,dsl,sym):MSGS.dsl90(ws.name,a.name,v,b,sp,dsl,sym);
+    let msg;
+    if(tier===100) msg=MSGS.dslCap(ws,a);
+    else if(tier===90) msg=MSGS.dsl90(ws,a);
+    else if(tier===80) msg=MSGS.dsl80(ws,a);
+    else if(tier===70) msg=MSGS.dsl70(ws,a);
     sendWA(msg);
     addLog('['+ws.name+'] DSL '+tier+'%: '+a.name,'warn');
     ws.dslAlertState[a.id]={tier,ts:Date.now()};
@@ -1401,8 +1759,40 @@ function checkDslAlertWs(ws,a,sp){
 
 async function runCheckWs(ws){
   if(ws.status!=='connected'||!ws.accounts.length) return {wsName:ws.name,flags:0,accounts:0};
-  const results=await Promise.all(ws.accounts.map(a=>getSpendWs(ws,a.id)));
-  ws.accounts.forEach((a,i)=>{ws.spends[a.id]=results[i];});
+  // ONE single call per workspace — replaces N per-account spend fetches.
+  // Also gives us account_status in the same response so we detect bans here.
+  let snap;
+  try{
+    snap=await fetchWorkspaceSnapshot(ws,{includeCampaigns:false});
+  }catch(e){
+    addLog('['+ws.name+'] snapshot failed: '+e.message,'err');
+    return {wsName:ws.name,flags:0,accounts:ws.accounts.length};
+  }
+  ws.accounts.forEach(a=>{
+    const s=snap[a.id];
+    if(!s) return;
+    ws.spends[a.id]=s.spend;
+    const prev=ws.prevStatus[a.id];
+    const cur=s.account_status;
+    if(prev!==undefined&&prev!==cur){
+      // Update a.account_status BEFORE building the alert so buildAcctInfo
+      // shows the new status, not the stale one.
+      a.account_status=cur;
+      if(cur===2||cur===101){
+        sendWA(MSGS.disabled(ws,a));
+        addLog('['+ws.name+'] BANNED: '+a.name,'err');
+      } else if(cur===3||cur===9||cur===100){
+        sendWA(MSGS.warn(ws,a));
+        addLog('['+ws.name+'] RESTRICTED: '+a.name,'warn');
+      } else if(cur!==1){
+        sendWA(MSGS.change(ws,a,prev,cur));
+        addLog('['+ws.name+'] STATUS '+prev+'→'+cur+': '+a.name,'err');
+      }
+    } else {
+      a.account_status=cur;
+    }
+    ws.prevStatus[a.id]=cur;
+  });
   let flagCount=0;
   ws.accounts.forEach(a=>{
     const vb=ws.balances[a.id]||0;
@@ -1430,10 +1820,9 @@ async function runCheck(){
   const summary=allResults.map(r=>'• '+r.wsName+': '+r.accounts+' accounts, '+r.flags+' flags').join('\n');
   const totalFlags=allResults.reduce((s,r)=>s+r.flags,0);
   addLog('Check complete — '+workspaces.length+' workspaces, '+totalFlags+' total flags','ok');
-  // Show banner
+  // Show banner in-app — Telegram cycle summary intentionally NOT sent
+  // (operators only want actionable per-account alerts in chat).
   showBanner('info','⏱️','5-Minute Check Complete',summary,'OK');
-  // Send Telegram summary only if flags
-  if(totalFlags>0) sendWA(MSGS.checkDone(summary));
   generateReport();
 }
 
@@ -1473,7 +1862,7 @@ function updateAllRows(){
       rowEl.className='';return;
     }
     if(remEl){
-      const rc=rem<0?'#FF4444':rem<vb*0.05?'var(--red)':rem<vb*0.1?'var(--amber)':rem<vb*0.2?'var(--gold)':'var(--green)';
+      const rc=rem<0?'#FF4444':rem<=vb*0.10?'var(--red)':rem<=vb*0.20?'var(--amber)':rem<=vb*0.30?'var(--gold)':rem<=vb*0.50?'#7EC85A':'var(--green)';
       remEl.innerHTML='<span style="color:'+rc+';font-family:monospace">'+fmt(rem)+'</span>';
     }
     const rw=sp>0?Math.floor(vb/sp):999;
@@ -1482,7 +1871,7 @@ function updateAllRows(){
     const rwp=Math.min(100,Math.round((rw/14)*100));
     if(rwEl) rwEl.innerHTML='<span style="color:'+rwc+';font-family:monospace;font-weight:700">'+(rw>99?'99+':rw)+'d</span><div class="wbar-w" style="margin-left:6px"><div class="wbar" style="width:'+rwp+'%;background:'+rwc+'"></div></div>';
     if(flEl) flEl.innerHTML=layerPill(layer);
-    if(rowEl) rowEl.className=rowClass(layer);
+    if(rowEl){rowEl.className=rowClass(layer);rowEl.setAttribute('data-layer',String(layer||0));}
   });
   document.getElementById('m-bal').textContent=totBal>0?fmt(totBal):'—';
   document.getElementById('m-bal').className='mval '+(totBal>0?'gold':'');
@@ -1496,12 +1885,10 @@ function updateAllRows(){
     dslEl.textContent=dslCapCount;
     dslEl.className='mval '+(dslCapCount>0?'danger':'ok');
   }
+  updateWsErrorBanner();
 }
 
 // ═══ HEALTH ═══════════════════════════════════════════════════════════════
-async function getCampaigns(ws,id){
-  try{const d=await apiFetchWs(ws,id+'/campaigns?fields=effective_status&effective_status=["ACTIVE"]&limit=100');return d.data?d.data.length:0;}catch{return 0;}
-}
 async function runHealthCheck(){
   const ws=getActiveWs();
   if(!ws||ws.status!=='connected') return;
@@ -1509,7 +1896,25 @@ async function runHealthCheck(){
   const grid=document.getElementById('hgrid');
   if(btn){btn.disabled=true;btn.innerHTML='<span class="loader"></span>Checking...';}
   grid.innerHTML='<div class="empty-s"><span class="loader"></span>Loading...</div>';
-  const cams=await Promise.all(ws.accounts.map(a=>getCampaigns(ws,a.id)));
+  // Single call: spend + status + active campaign count for every account
+  let snap;
+  try{
+    snap=await fetchWorkspaceSnapshot(ws,{includeCampaigns:true});
+  }catch(e){
+    addLog('['+ws.name+'] health snapshot failed: '+e.message,'err');
+    grid.innerHTML='<div class="empty-s">Failed: '+sanitize(e.message)+'</div>';
+    if(btn){btn.disabled=false;btn.textContent='Refresh';}
+    return;
+  }
+  // Refresh local state from snapshot before rendering
+  ws.accounts.forEach(a=>{
+    const s=snap[a.id];
+    if(s){
+      a.account_status=s.account_status;
+      ws.spends[a.id]=s.spend;
+    }
+  });
+  const cams=ws.accounts.map(a=>(snap[a.id]||{}).activeCampaigns||0);
   grid.innerHTML='';
   let issues=0,disabled=0;
   ws.accounts.forEach((a,i)=>{
@@ -1518,16 +1923,23 @@ async function runHealthCheck(){
     const isOk=a.account_status===1;
     if(!isOk) issues++;if(isDisabled) disabled++;
     const m=ws.acctMeta[a.id]||{};
-    if(ws.prevStatus[a.id]&&ws.prevStatus[a.id]!==a.account_status&&!isOk){
-      sendWA(MSGS.change(ws.name,a.name,m.vendor,m.buyer,ws.prevStatus[a.id],a.account_status));
-      addLog('['+ws.name+'] STATUS: '+a.name+' → '+a.account_status,'err');
+    // Mirror runCheckWs: send ONE specific alert per status transition, never duplicate
+    if(ws.prevStatus[a.id]!==undefined&&ws.prevStatus[a.id]!==a.account_status){
+      if(isDisabled){
+        sendWA(MSGS.disabled(ws,a));
+        addLog('['+ws.name+'] BANNED: '+a.name,'err');
+      } else if(isWarn){
+        sendWA(MSGS.warn(ws,a));
+        addLog('['+ws.name+'] RESTRICTED: '+a.name,'warn');
+      } else if(!isOk){
+        sendWA(MSGS.change(ws,a,ws.prevStatus[a.id],a.account_status));
+        addLog('['+ws.name+'] STATUS '+ws.prevStatus[a.id]+'→'+a.account_status+': '+a.name,'err');
+      }
     }
-    if(isDisabled&&ws.prevStatus[a.id]!==a.account_status) sendWA(MSGS.disabled(ws.name,a.name,m.vendor,m.buyer));
-    else if(isWarn&&ws.prevStatus[a.id]!==a.account_status) sendWA(MSGS.warn(ws.name,a.name,m.vendor,m.buyer));
     ws.prevStatus[a.id]=a.account_status;
     const cardCls=isDisabled?'hc-danger':isWarn?'hc-warn':'hc-ok';
     const lifetime=a.amount_spent?fmt(parseFloat(a.amount_spent)/100):'$0';
-    const statusMap={1:'Active',2:'Disabled',3:'Unsettled',9:'In grace period',100:'Pending closure',101:'Closed'};
+    const statusMap={1:'ATIVO',2:'BANNED',3:'RESTRICTED',9:'RESTRICTED',100:'RESTRICTED',101:'BANNED'};
     const statusColor=isOk?'c-ok':isDisabled?'c-danger':'c-warn';
     let alertHtml='';
     if(isDisabled) alertHtml='<div class="abanner ab-danger">Account disabled — request replacement + balance transfer immediately</div>';
@@ -1535,7 +1947,9 @@ async function runHealthCheck(){
     const dslVal=parseFloat(m.dsl)||0;
     const spToday=ws.spends[a.id]||0;
     const dslRow=dslVal>0?`<div class="hc-row"><span class="hc-key">DSL</span><span class="hc-val">$${Math.round(dslVal).toLocaleString()} <span style="margin-left:4px">${dslPill((spToday/dslVal)*100)}</span></span></div>`:'';
-    const profileRow=m.dolphinProfile?`<div class="hc-row"><span class="hc-key">Profile</span><span class="hc-val">${sanitize(m.dolphinProfile)}</span></div>`:'';
+    const fbRow=m.fbProfile?`<div class="hc-row"><span class="hc-key">FB Profile</span><span class="hc-val" style="font-size:11px">${sanitize(m.fbProfile)}</span></div>`:'';
+    const pixelRow=m.pixel?`<div class="hc-row"><span class="hc-key">Pixel</span><span class="hc-val mono" style="font-size:11px">${sanitize(m.pixel)}</span></div>`:'';
+    const profileRow=m.dolphinProfile?`<div class="hc-row"><span class="hc-key">AdsPower</span><span class="hc-val">${sanitize(m.dolphinProfile)}${m.adsPowerGroup?' <span style="color:var(--t3);font-weight:400">/ '+sanitize(m.adsPowerGroup)+'</span>':''}</span></div>`:(m.adsPowerGroup?`<div class="hc-row"><span class="hc-key">AP Group</span><span class="hc-val">${sanitize(m.adsPowerGroup)}</span></div>`:'');
     const proxyRow=m.proxy?`<div class="hc-row"><span class="hc-key">Proxy</span><span class="hc-val" style="font-size:11px">${sanitize(m.proxy)}</span></div>`:'';
     grid.innerHTML+=`<div class="hcard ${cardCls}">
       <div class="hc-top">
@@ -1549,6 +1963,8 @@ async function runHealthCheck(){
         <div class="hc-row"><span class="hc-key">Buyer</span><span class="hc-val">${sanitize(m.buyer||'—')}</span></div>
         <div class="hc-row"><span class="hc-key">BM</span><span class="hc-val">${sanitize(m.bm||'—')}</span></div>
         <div class="hc-row"><span class="hc-key">Vertical</span><span class="hc-val">${sanitize(m.vertical||'—')}</span></div>
+        ${fbRow}
+        ${pixelRow}
         ${profileRow}
         ${proxyRow}
         ${dslRow}
@@ -1573,16 +1989,25 @@ async function runHealthCheck(){
 
 // ═══ WARMING ══════════════════════════════════════════════════════════════
 let warmingAccounts=[];
+function loadWarming(){
+  try{
+    const d=localStorage.getItem('umbra_warming');
+    warmingAccounts=d?JSON.parse(d):[];
+    if(!Array.isArray(warmingAccounts)) warmingAccounts=[];
+  }catch(e){warmingAccounts=[];}
+}
+function saveWarming(){try{localStorage.setItem('umbra_warming',JSON.stringify(warmingAccounts));}catch(e){}}
 function openWarmModal(){document.getElementById('warm-modal').classList.add('open');['w-id','w-vendor','w-buyer','w-vertical'].forEach(id=>document.getElementById(id).value='');}
 function closeWarmModal(){document.getElementById('warm-modal').classList.remove('open');}
 function saveWarm(){
   const id=sanitize(document.getElementById('w-id').value.trim());
   if(!id) return;
   warmingAccounts.push({id,vendor:sanitize(document.getElementById('w-vendor').value),buyer:sanitize(document.getElementById('w-buyer').value),vertical:sanitize(document.getElementById('w-vertical').value),startDate:today()});
+  saveWarming();
   closeWarmModal();renderWarming();
   addLog('Added '+id+' to warming','info');
 }
-function removeWarm(idx){warmingAccounts.splice(idx,1);renderWarming();}
+function removeWarm(idx){warmingAccounts.splice(idx,1);saveWarming();renderWarming();}
 function renderWarming(){
   const tb=document.getElementById('warm-tb'),empty=document.getElementById('warm-empty');
   tb.innerHTML='';
@@ -1624,12 +2049,15 @@ function generateReport(){
     if(a.account_status===1) active++;
     if(a.account_status===2||a.account_status===101) disabled++;
     const layer=getAlertLayer(vb,sp);
-    if(layer===5) flags.push('  🚨🚨 EMERGENCY — '+a.name+' | Vendor: '+(m.vendor||'—')+' | Buyer: '+(m.buyer||'—')+' | Overspent by $'+Math.round(sp-vb));
-    else if(layer===4) flags.push('  🚨 ZERO — '+a.name+' | Vendor: '+(m.vendor||'—'));
-    else if(layer===3) flags.push('  🔴 CRITICAL (5%) — '+a.name+' | '+fmt(vb-sp)+' left');
-    else if(layer===2) flags.push('  🔶 ALERT (10%) — '+a.name+' | '+fmt(vb-sp)+' left');
-    else if(layer===1) flags.push('  ⚠️  ATTENTION (20%) — '+a.name+' | '+fmt(vb-sp)+' left');
-    if(a.account_status===2) flags.push('  🔴 DISABLED — '+a.name+' | Vendor: '+(m.vendor||'—'));
+    if(layer===7) flags.push('  🚨🚨 EMERGENCY — '+a.name+' | Vendor: '+(m.vendor||'—')+' | Buyer: '+(m.buyer||'—')+' | Overspent by $'+Math.round(sp-vb));
+    else if(layer===6) flags.push('  🚨 ZERO — '+a.name+' | Vendor: '+(m.vendor||'—'));
+    else if(layer===5) flags.push('  🔴 CRITICAL (10%) — '+a.name+' | '+fmt(vb-sp)+' left');
+    else if(layer===4) flags.push('  🔶 ALERT (20%) — '+a.name+' | '+fmt(vb-sp)+' left');
+    else if(layer===3) flags.push('  🟠 ALERT (30%) — '+a.name+' | '+fmt(vb-sp)+' left');
+    else if(layer===2) flags.push('  ⚠️  ATTENTION (40%) — '+a.name+' | '+fmt(vb-sp)+' left');
+    else if(layer===1) flags.push('  ⚠️  ATTENTION (50%) — '+a.name+' | '+fmt(vb-sp)+' left');
+    if(a.account_status===2||a.account_status===101) flags.push('  🔴 BANNED — '+a.name+' | Vendor: '+(m.vendor||'—'));
+    else if(a.account_status===3||a.account_status===9||a.account_status===100) flags.push('  🟡 RESTRICTED — '+a.name+' | Vendor: '+(m.vendor||'—'));
     const dslVal=parseFloat(m.dsl)||0;
     if(dslVal>0){
       const usage=(sp/dslVal)*100;
@@ -1650,7 +2078,7 @@ function generateReport(){
   rep+='  Meta spend today:      '+fmt0(totSpend)+'\n';
   rep+='  Balance runway:        '+(rw>0?rw+'d avg':'—')+'\n';
   rep+='  Active accounts:       '+active+'\n';
-  rep+='  Disabled accounts:     '+disabled+'\n';
+  rep+='  Banned accounts:       '+disabled+'\n';
   rep+='  Warming pipeline:      '+warmingAccounts.length+' account(s)\n\n';
   if(flags.length) rep+='FLAGS ('+flags.length+' requiring attention)\n'+flags.join('\n')+'\n\n';
   else rep+='STATUS\n  All accounts operating normally.\n\n';
@@ -1662,7 +2090,7 @@ function generateReport(){
     rep+='\n';
   }
   rep+='NEXT ACTIONS\n';
-  if(disabled>0) rep+='  1. Contact vendor for replacement on '+disabled+' disabled account(s)\n';
+  if(disabled>0) rep+='  1. Contact vendor for replacement on '+disabled+' banned account(s)\n';
   const crits=flags.filter(f=>f.includes('ZERO')||f.includes('EMERGENCY')||f.includes('CRITICAL'));
   if(crits.length) rep+='  '+(disabled>0?2:1)+'. Immediate top-up on '+crits.length+' critical account(s)\n';
   if(!flags.length&&!disabled) rep+='  1. Continue monitoring — no action required\n';
@@ -1690,15 +2118,10 @@ function renderAccountsList(){
 // ═══ AUTO REFRESH ══════════════════════════════════════════════════════════
 function clearAllTimers(){if(autoTimer)clearInterval(autoTimer);}
 function calcSafeInterval(){
-  // Each check = 1 API call per account (insights) + 1 for adaccounts
-  // Meta limit ~180 calls/hr per token. Keep under 80% = 144 calls/hr.
-  // interval_secs = total_accounts_per_token * 3600 / 144
-  const maxCallsPerHr=144;
-  let maxAccounts=0;
-  workspaces.forEach(ws=>{if(ws.status==='connected') maxAccounts=Math.max(maxAccounts,ws.accounts.length);});
-  if(maxAccounts===0) return 300;
-  const safe=Math.ceil(maxAccounts*3600/maxCallsPerHr);
-  return Math.max(300,safe); // minimum 5min
+  // With nested-field snapshot batching, each cycle = 1 API call per workspace
+  // (regardless of account count). Per-token rate limit is now trivial.
+  // Floor of 5min is purely a UX choice — Meta data doesn't change faster.
+  return 300;
 }
 function startAutoRefresh(){
   clearAllTimers();
@@ -1708,33 +2131,12 @@ function startAutoRefresh(){
     const m=Math.floor(autoSecs/60),s=autoSecs%60;
     const el=document.getElementById('m-cd');
     if(el) el.textContent=m+'m'+String(s).padStart(2,'0')+'s';
-    if(autoSecs<=0){autoSecs=calcSafeInterval();runCheck();workspaces.forEach(ws=>{if(ws.status==='connected')runHealthCheckWs(ws);});}
+    // runCheck now covers spend + status changes for ALL workspaces via snapshot.
+    if(autoSecs<=0){autoSecs=calcSafeInterval();runCheck();}
   },1000);
 }
-async function runHealthCheckWs(ws){
-  // Lightweight health check for non-active workspaces during auto-refresh
-  if(!ws||ws.status!=='connected'||!ws.accounts.length) return;
-  try{
-    const d=await apiFetchWs(ws,'me/adaccounts?fields=id,account_status&limit=25');
-    if(d.error&&d.error.code===190){
-      ws.status='error';ws.errorMsg='Token expired';
-      sendWA(MSGS.tokenExpired(ws.name));
-      renderWsDropdown();
-      return;
-    }
-    if(d.data) d.data.forEach(a=>{
-      const prev=ws.prevStatus[a.id];
-      if(prev&&prev!==a.account_status&&a.account_status!==1){
-        const m=ws.acctMeta[a.id]||{};
-        sendWA(MSGS.change(ws.name,a.name,m.vendor,m.buyer,prev,a.account_status));
-        addLog('['+ws.name+'] STATUS: '+a.id+' → '+a.account_status,'err');
-      }
-      ws.prevStatus[a.id]=a.account_status;
-    });
-  }catch(e){}
-}
 function switchTab(name){
-  const names=['recon','health','warming','bans','assets','workspaces','settings','report','log'];
+  const names=['recon','health','warming','bans','sot','assets','workspaces','settings','report','log'];
   document.querySelectorAll('.tab').forEach((tab,i)=>tab.classList.toggle('on',names[i]===name));
   document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
   const pane=document.getElementById('pane-'+name);
@@ -1743,6 +2145,7 @@ function switchTab(name){
   if(name==='workspaces') renderWorkspacesView();
   if(name==='settings') renderTgConfigView();
   if(name==='bans') renderBansView();
+  if(name==='sot') renderSOTView();
 }
 
 
@@ -1762,7 +2165,7 @@ function clearTgToken(){
   document.getElementById('tg-token-inp').value='';
   saveTgConfig();
   renderTgConfigView();
-  addLog('Telegram token cleared — legacy fallback active','info');
+  addLog('Telegram token cleared — alerts will pause until you save a new one','info');
 }
 function openTgChatModal(){
   document.getElementById('tg-chat-name').value='';
@@ -1810,6 +2213,72 @@ async function testTgChat(id){
     else addLog('Test failed ('+c.name+'): '+d.description,'err');
   }catch(e){addLog('Test failed ('+c.name+'): '+e.message,'err');}
 }
+// ═══ WORKSPACE ERROR BANNER ══════════════════════════════════════════════
+function updateWsErrorBanner(){
+  const banner=document.getElementById('ws-err-banner');
+  if(!banner) return;
+  const errored=workspaces.filter(w=>w.status==='error');
+  if(errored.length===0){
+    banner.style.display='none';
+    banner.innerHTML='';
+  } else {
+    banner.innerHTML='⚠️ <strong>'+errored.length+' workspace'+(errored.length===1?'':'s')+' with errors</strong>: '+errored.map(w=>sanitize(w.name)).join(', ')+' — click to fix';
+    banner.style.display='block';
+  }
+}
+
+// ═══ DSL ALERT RESET ═════════════════════════════════════════════════════
+function resetDslAlerts(){
+  let cleared=0;
+  workspaces.forEach(ws=>{
+    if(ws.dslAlertState){
+      cleared+=Object.keys(ws.dslAlertState).length;
+      ws.dslAlertState={};
+    }
+  });
+  saveAllStorage();
+  if(typeof updateAllRows==='function') updateAllRows();
+  addLog('DSL alert state reset — '+cleared+' entry(ies) cleared','ok');
+  showBanner('info','✓','DSL alerts reset','Cleared DSL alert state for '+cleared+' account(s). Next check will re-evaluate.','OK');
+}
+
+// ═══ BACKUP / RESTORE ════════════════════════════════════════════════════
+function exportBackup(){
+  // umbra_session and umbra_lock are intentionally omitted — they reset on restore.
+  const keys=['umbra_workspaces','umbra_assets','umbra_tg_config','umbra_bans','umbra_vendor_scores','umbra_warming','umbra_theme','umbra_salt','umbra_pw'];
+  const dump={version:1,exportedAt:new Date().toISOString(),data:{}};
+  keys.forEach(k=>{const v=localStorage.getItem(k); if(v!==null) dump.data[k]=v;});
+  const blob=new Blob([JSON.stringify(dump,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='umbra-backup-'+today()+'.json';
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},100);
+  addLog('Backup exported ('+Object.keys(dump.data).length+' keys)','ok');
+}
+
+function importBackup(event){
+  const file=event.target.files&&event.target.files[0];
+  if(!file){return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const dump=JSON.parse(e.target.result);
+      if(!dump||!dump.data||!dump.version) throw new Error('Invalid backup format');
+      if(!confirm('This will REPLACE all UMBRA data with the backup contents. The page will reload after import. Continue?')) return;
+      Object.entries(dump.data).forEach(([k,v])=>{localStorage.setItem(k,String(v));});
+      addLog('Backup imported — reloading...','ok');
+      setTimeout(()=>location.reload(),500);
+    }catch(err){
+      addLog('Import failed: '+err.message,'err');
+      alert('Import failed: '+err.message);
+    }
+  };
+  reader.readAsText(file);
+  event.target.value='';
+}
+
 function renderTgConfigView(){
   const tokenInp=document.getElementById('tg-token-inp');
   const status=document.getElementById('tg-token-status');
@@ -1996,7 +2465,7 @@ function populateFilters(){
   if(!wsSelect) return;
 
   // Save current values
-  const curWs=wsSelect.value, curVert=vertSelect.value, curBuyer=buyerSelect.value;
+  const curWs=wsSelect.value, curVert=vertSelect?vertSelect.value:'', curBuyer=buyerSelect.value;
 
   // Rebuild workspace options
   wsSelect.innerHTML='<option value="">All workspaces</option>';
@@ -2015,12 +2484,14 @@ function populateFilters(){
     });
   });
 
-  vertSelect.innerHTML='<option value="">All verticals</option>';
-  [...verticals].sort().forEach(v=>{
-    const opt=document.createElement('option');
-    opt.value=v; opt.textContent=v;
-    vertSelect.appendChild(opt);
-  });
+  if(vertSelect){
+    vertSelect.innerHTML='<option value="">All verticals</option>';
+    [...verticals].sort().forEach(v=>{
+      const opt=document.createElement('option');
+      opt.value=v; opt.textContent=v;
+      vertSelect.appendChild(opt);
+    });
+  }
 
   buyerSelect.innerHTML='<option value="">All buyers</option>';
   [...buyers].sort().forEach(b=>{
@@ -2031,16 +2502,20 @@ function populateFilters(){
 
   // Restore values
   wsSelect.value=curWs;
-  vertSelect.value=curVert;
+  if(vertSelect) vertSelect.value=curVert;
   buyerSelect.value=curBuyer;
 }
 
 function applyFilters(){
   const search=(document.getElementById('filter-search')?.value||'').toLowerCase();
   const wsFilter=document.getElementById('filter-workspace')?.value||'';
-  const vertFilter=document.getElementById('filter-vertical')?.value||'';
   const buyerFilter=document.getElementById('filter-buyer')?.value||'';
   const layerFilter=document.getElementById('filter-layer')?.value||'';
+
+  // O(1) account → workspace lookup, built once per filter pass.
+  // Replaces the old O(N²) scan that became sluggish at scale.
+  const acctToWs={};
+  workspaces.forEach(w=>(w.accounts||[]).forEach(a=>{acctToWs[a.id]=w;}));
 
   const rows=document.querySelectorAll('#recon-tb tr');
   let visible=0, total=rows.length;
@@ -2050,32 +2525,17 @@ function applyFilters(){
     const rowId=row.id?.replace('rrow-','');
     if(!rowId){row.classList.remove('filtered-out');return;}
 
-    // Find which workspace this account belongs to
-    let rowWs=null;
-    workspaces.forEach(w=>{
-      if(w.accounts.find(a=>a.id===rowId)) rowWs=w;
-    });
+    const rowWs=acctToWs[rowId];
     const meta=rowWs?.acctMeta?.[rowId]||{};
 
-    // Text from cells
     const nameCell=row.querySelector('.aname')?.textContent||'';
     const vendorEl=document.getElementById('vendor-'+rowId);
     const vendor=(vendorEl?.value||meta.vendor||'').toLowerCase();
     const buyer=(meta.buyer||'').toLowerCase();
     const vertical=(meta.vertical||'').toLowerCase();
-    const flagEl=row.querySelector('.pill');
-    const flagText=flagEl?.textContent||'';
 
-    // Determine layer from pill class
-    let rowLayer='';
-    if(flagEl){
-      if(flagEl.classList.contains('p-l5')) rowLayer='5';
-      else if(flagEl.classList.contains('p-l4')) rowLayer='4';
-      else if(flagEl.classList.contains('p-l3')) rowLayer='3';
-      else if(flagEl.classList.contains('p-l2')) rowLayer='2';
-      else if(flagEl.classList.contains('p-l1')) rowLayer='1';
-      else if(flagEl.classList.contains('p-info')) rowLayer='0';
-    }
+    // Layer comes from data-layer attribute set in updateAllRows
+    const rowLayer=row.getAttribute('data-layer')||'';
 
     const matchSearch=!search||
       nameCell.toLowerCase().includes(search)||
@@ -2086,18 +2546,17 @@ function applyFilters(){
       rowId.toLowerCase().includes(search);
 
     const matchWs=!wsFilter||(rowWs?.id===wsFilter);
-    const matchVert=!vertFilter||vertical===vertFilter.toLowerCase();
     const matchBuyer=!buyerFilter||buyer===buyerFilter.toLowerCase();
     const matchLayer=!layerFilter||rowLayer===layerFilter;
 
-    const show=matchSearch&&matchWs&&matchVert&&matchBuyer&&matchLayer;
+    const show=matchSearch&&matchWs&&matchBuyer&&matchLayer;
     row.classList.toggle('filtered-out',!show);
     if(show) visible++;
   });
 
   const countEl=document.getElementById('filter-count');
   if(countEl){
-    const hasFilter=search||wsFilter||vertFilter||buyerFilter||layerFilter;
+    const hasFilter=search||wsFilter||buyerFilter||layerFilter;
     countEl.textContent=hasFilter?visible+' of '+total+' accounts':'';
   }
 }
@@ -2184,6 +2643,70 @@ tr.filtered-out{display:none}
   win.document.close();
 }
 
+
+// ═══ SOT — SOURCE OF TRUTH ════════════════════════════════════════════════
+function renderSOTView(){
+  const tb=document.getElementById('sot-tb');
+  const empty=document.getElementById('sot-empty');
+  const cnt=document.getElementById('sot-count');
+  const tabBg=document.getElementById('tb-sot');
+  if(!tb) return;
+  let allRows=[];
+  workspaces.forEach(ws=>{
+    if(ws.status!=='connected') return;
+    (ws.accounts||[]).forEach(a=>{allRows.push({ws,a});});
+  });
+  if(cnt) cnt.textContent=allRows.length+' account'+(allRows.length===1?'':'s');
+  if(tabBg) tabBg.textContent=allRows.length;
+  if(allRows.length===0){
+    if(empty) empty.style.display='block';
+    tb.innerHTML='';
+    applySotFilter();
+    return;
+  }
+  if(empty) empty.style.display='none';
+  tb.innerHTML='';
+  allRows.forEach(({ws,a})=>{
+    const m=ws.acctMeta[a.id]||{};
+    const tr=document.createElement('tr');
+    tr.id='sot-row-'+a.id;
+    tr.dataset.search=(a.name+' '+a.id+' '+(m.vendor||'')+' '+(m.buyer||'')+' '+(m.vertical||'')+' '+(m.fbProfile||'')+' '+(m.dolphinProfile||'')+' '+(m.bm||'')+' '+(m.pixel||'')+' '+(m.adsPowerGroup||'')+' '+(m.proxy||'')).toLowerCase();
+    tr.dataset.status=sLabel(a.account_status);
+    tr.innerHTML=
+      '<td><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span class="ws-tag" style="background:'+ws.color+'22;color:'+ws.color+';border:1px solid '+ws.color+'44">'+sanitize(ws.name)+'</span></div>'+
+        '<div class="aname" title="'+sanitize(a.name)+'">'+sanitize(a.name)+'</div><div class="aid">'+sanitize(a.id)+'</div></td>'+
+      '<td>'+sPill(a.account_status)+'</td>'+
+      '<td>'+buildAssetSelect('sot-vendor-'+a.id,assets.vendors,m.vendor||'',ws.id,a.id,'saveSotMeta')+'</td>'+
+      '<td>'+buildAssetSelect('sot-buyer-'+a.id,assets.buyers,m.buyer||'',ws.id,a.id,'saveSotMeta')+'</td>'+
+      '<td>'+buildAssetSelect('sot-vertical-'+a.id,assets.verticals,m.vertical||'',ws.id,a.id,'saveSotMeta')+'</td>'+
+      '<td><input class="cel" id="sot-fbprofile-'+a.id+'" placeholder="profile@email" value="'+sanitize(m.fbProfile||'')+'" onchange="saveSotMeta(\''+ws.id+'\',\''+a.id+'\')" style="min-width:150px"/></td>'+
+      '<td><input class="cel" id="sot-bm-'+a.id+'" placeholder="BM ID" value="'+sanitize(m.bm||'')+'" onchange="saveSotMeta(\''+ws.id+'\',\''+a.id+'\')" style="min-width:120px"/></td>'+
+      '<td><input class="cel mono" id="sot-pixel-'+a.id+'" placeholder="123456789012345" value="'+sanitize(m.pixel||'')+'" onchange="saveSotMeta(\''+ws.id+'\',\''+a.id+'\')" style="min-width:140px;font-size:12px"/></td>'+
+      '<td><input class="cel" id="sot-profile-'+a.id+'" placeholder="A-PB-001" value="'+sanitize(m.dolphinProfile||'')+'" onchange="saveSotMeta(\''+ws.id+'\',\''+a.id+'\')" style="min-width:110px"/></td>'+
+      '<td><input class="cel" id="sot-apgroup-'+a.id+'" placeholder="Group name" value="'+sanitize(m.adsPowerGroup||'')+'" onchange="saveSotMeta(\''+ws.id+'\',\''+a.id+'\')" style="min-width:130px"/></td>'+
+      '<td><input class="cel mono" id="sot-proxy-'+a.id+'" placeholder="ip:port" value="'+sanitize(m.proxy||'')+'" onchange="saveSotMeta(\''+ws.id+'\',\''+a.id+'\')" style="min-width:140px;font-size:12px"/></td>';
+    tb.appendChild(tr);
+  });
+  applySotFilter();
+}
+
+function applySotFilter(){
+  const q=(document.getElementById('sot-search')?.value||'').toLowerCase();
+  const st=document.getElementById('sot-filter-status')?.value||'';
+  const rows=document.querySelectorAll('#sot-tb tr');
+  let visible=0;
+  rows.forEach(r=>{
+    const data=r.dataset.search||'';
+    const status=r.dataset.status||'';
+    const matchQ=!q||data.includes(q);
+    const matchSt=!st||status===st;
+    const show=matchQ&&matchSt;
+    r.style.display=show?'':'none';
+    if(show) visible++;
+  });
+  const cnt=document.getElementById('sot-filter-count');
+  if(cnt) cnt.textContent=(q||st)?visible+' of '+rows.length:'';
+}
 
 // ═══ BAN TRACKER ══════════════════════════════════════════════════════════
 let bans=[];
@@ -2501,7 +3024,13 @@ function checkPersistentSession(){
 
 function autoLoginIfValid(){
   if(!localStorage.getItem('umbra_pw')) return; // No password set
-  if(checkPersistentSession()){
+  if(!checkPersistentSession()) return;
+  // Auto-login only works if cipher key is still in sessionStorage (tab not closed).
+  // If it's gone, force re-login so encrypted tokens can be decrypted.
+  const sk=sessionStorage.getItem('umbra_key');
+  if(!sk){localStorage.removeItem('umbra_session');return;}
+  try{cryptoKey=b64ToBytes(sk);}catch(e){sessionStorage.removeItem('umbra_key');localStorage.removeItem('umbra_session');return;}
+  {
     document.getElementById('login-screen').style.display='none';
     document.getElementById('app').style.display='block';
     document.getElementById('tabs').style.display='flex';
@@ -2510,6 +3039,8 @@ function autoLoginIfValid(){
     loadTgConfig();
     loadBans();
     loadVendorScores();
+    loadWarming();
+    if(typeof renderWarming==='function') renderWarming();
     addLog('Session restored','ok');
     renderWorkspaceList();
     renderWorkspacesView();
@@ -2531,6 +3062,7 @@ const _stored=localStorage.getItem('umbra_pw');
 const _hint=document.getElementById('login-hint');
 if(_hint) _hint.textContent=_stored?'Password set.':'First time? Set a password.';
 addLog('UMBRA ready','ok');
+loadLockState();
 autoLoginIfValid();
 
 </script>

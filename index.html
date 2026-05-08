@@ -462,7 +462,7 @@ tr.filtered-out{display:none}
     <div class="tab" onclick="switchTab('bans')"><span id="tab-bans">Ban Tracker</span> <span class="tbg" id="tb-bans">0</span></div>
     <div class="tab" onclick="switchTab('sot')"><span id="tab-sot">SOT</span> <span class="tbg" id="tb-sot">0</span></div>
     <div class="tab" onclick="switchTab('buyers')"><span id="tab-buyers">Media Buyers</span> <span class="tbg" id="tb-buyers">0</span></div>
-    <div class="tab" onclick="switchTab('assets')"><span id="tab-assets">Assets</span></div>
+    <div class="tab" onclick="switchTab('vendors')"><span id="tab-vendors-label">Vendors</span> <span class="tbg" id="tb-vendors">0</span></div>
     <div class="tab" onclick="switchTab('workspaces')"><span id="tab-workspaces">Workspaces</span> <span class="tbg" id="tb-ws">0</span></div>
     <div class="tab" onclick="switchTab('settings')"><span id="tab-settings">Settings</span></div>
     <div class="tab" onclick="switchTab('report')"><span id="tab-report">Report</span></div>
@@ -639,8 +639,8 @@ tr.filtered-out{display:none}
       </div>
     </div>
 
-    <!-- ASSETS -->
-    <div id="pane-assets" class="pane">
+    <!-- VENDORS -->
+    <div id="pane-vendors" class="pane">
       <div class="card">
         <div class="card-hdr">
           <div class="card-title">Vendors</div>
@@ -1085,12 +1085,13 @@ function toggleTheme(){applyTheme(currentTheme==='dark'?'light':'dark');}
 applyTheme(currentTheme);
 
 // ═══ TELEGRAM ════════════════════════════════════════════════════════════
-// Default bot token (rotated). Hardcoded for convenience per operator request.
-// SECURITY NOTE: token is visible in deployed source. Rotate via @BotFather and
-// update this constant if/when needed. Per-user chat IDs are configured via
-// Settings → Add chat (each user gets their chat ID by messaging the bot, then
-// reading https://api.telegram.org/bot<TOKEN>/getUpdates — the chat.id field).
-const TG_LEGACY={token:'8700935512:AAH0wjCd1_tzUf-QKlRdtmeHi9HvqgSwkfE',chat:''};
+// Bot token + chat IDs are configured via the Settings tab.
+// NEVER hardcode tokens here — public GitHub repos get scanned by GitGuardian
+// and similar tools, and any token committed becomes a permanent leak (git
+// history preserves it even after deletion). Rotate at @BotFather and paste
+// the new token in Settings → Bot Token. The cipher layer encrypts it in
+// localStorage so the deployed source stays clean.
+const TG_LEGACY={token:'',chat:''};
 let tgConfig={token:'',chats:[]}; // chats: [{id,name,chatId,enabled}]
 
 function loadTgConfig(){
@@ -2256,12 +2257,12 @@ function startAutoRefresh(){
   },1000);
 }
 function switchTab(name){
-  const names=['recon','health','warming','bans','sot','buyers','assets','workspaces','settings','report','log'];
+  const names=['recon','health','warming','bans','sot','buyers','vendors','workspaces','settings','report','log'];
   document.querySelectorAll('.tab').forEach((tab,i)=>tab.classList.toggle('on',names[i]===name));
   document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
   const pane=document.getElementById('pane-'+name);
   if(pane) pane.classList.add('on');
-  if(name==='assets'){renderAssetsView();renderVendorScorecard();}
+  if(name==='vendors'){renderAssetsView();renderVendorScorecard();}
   if(name==='workspaces') renderWorkspacesView();
   if(name==='settings') renderTgConfigView();
   if(name==='bans') renderBansView();
@@ -2445,6 +2446,31 @@ function loadAssets(){
 }
 function saveAssets(){try{localStorage.setItem('umbra_assets',JSON.stringify(assets));}catch(e){}}
 
+// Sync any vendor name found in acctMeta into assets.vendors so the Recon/SOT
+// dropdowns stop showing legacy values as "(custom)" and the Vendors tab
+// reflects what's actually in use across the system. Idempotent.
+function migrateVendorAssets(){
+  if(!assets) return 0;
+  if(!Array.isArray(assets.vendors)) assets.vendors=[];
+  const known=new Set(assets.vendors);
+  let added=0;
+  workspaces.forEach(ws=>{
+    Object.values(ws.acctMeta||{}).forEach(m=>{
+      if(m&&m.vendor&&!known.has(m.vendor)){
+        known.add(m.vendor);
+        assets.vendors.push(m.vendor);
+        added++;
+      }
+    });
+  });
+  if(added>0){
+    assets.vendors.sort();
+    saveAssets();
+    addLog('Synced '+added+' vendor(s) from accounts to the Vendors list','info');
+  }
+  return added;
+}
+
 function addAsset(type){
   // Only 'vendors' is exposed via the Assets tab now. Media Buyers live in
   // the dedicated tab; Vertical was removed from the system.
@@ -2472,10 +2498,30 @@ function addAsset(type){
 }
 
 function removeAsset(type, val){
+  if(type==='vendors'){
+    // Count usage across acctMeta to warn the operator before unlinking.
+    let used=0;
+    workspaces.forEach(ws=>{
+      Object.values(ws.acctMeta||{}).forEach(m=>{
+        if(m&&m.vendor===val) used++;
+      });
+    });
+    if(used>0){
+      if(!confirm('Vendor "'+val+'" is currently set on '+used+' account(s). Removing it will also clear the vendor on those accounts. Continue?')) return;
+      workspaces.forEach(ws=>{
+        Object.values(ws.acctMeta||{}).forEach(m=>{
+          if(m&&m.vendor===val) m.vendor='';
+        });
+      });
+      saveAllStorage();
+      addLog('Cleared vendor "'+val+'" from '+used+' account(s)','info');
+    }
+  }
   assets[type]=assets[type].filter(v=>v!==val);
   saveAssets();
   renderAssetsView();
-  buildReconRows();
+  if(typeof buildReconRows==='function') buildReconRows();
+  if(typeof renderSOTView==='function') renderSOTView();
   if(type==='vendors') renderVendorScorecard();
   addLog('Removed '+type.slice(0,-1)+': '+val,'info');
 }
@@ -2483,6 +2529,8 @@ function removeAsset(type, val){
 function renderAssetsView(){
   // Only Vendors live in Assets now (Media Buyers moved to dedicated tab,
   // Vertical removed from the system).
+  const tbBg=document.getElementById('tb-vendors');
+  if(tbBg) tbBg.textContent=(assets.vendors||[]).length;
   ['vendors'].forEach(type=>{
     const listId={vendors:'vendor-list'}[type];
     const countId={vendors:'vendor-count'}[type];
@@ -3427,6 +3475,7 @@ function autoLoginIfValid(){
     loadVendorScores();
     loadWarming();
     loadMediaBuyers();
+    migrateVendorAssets();
     if(typeof renderWarming==='function') renderWarming();
     if(typeof renderMediaBuyers==='function') renderMediaBuyers();
     addLog('Session restored','ok');
